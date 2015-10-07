@@ -520,35 +520,16 @@ static void create_all_freq_table(void)
 	return;
 }
 
-static void create_bL_freq_table(void)
+static void free_all_freq_table(void)
 {
-	bL_freq_table = kzalloc(sizeof(struct bL_freq_table), GFP_KERNEL);
-	if (!bL_freq_table)
-		pr_warn("could not allocate memory for bL_freq_table \n");
-	return;
-}
-
-static void add_bL_freq_table(unsigned int freq)
-{
-	size_t size;
-	size = sizeof(unsigned int) * (bL_freq_table->table_size + 1);
-	bL_freq_table->freq_table = krealloc(bL_freq_table->freq_table,
-			size, GFP_ATOMIC);
-	if (IS_ERR(bL_freq_table->freq_table)) {
-		pr_warn("Could not reallocate memory for freq_table\n");
-		bL_freq_table->freq_table = NULL;
-		return;
+	if (all_freq_table) {
+		if (all_freq_table->freq_table) {
+			kfree(all_freq_table->freq_table);
+			all_freq_table->freq_table = NULL;
+		}
+		kfree(all_freq_table);
+		all_freq_table = NULL;
 	}
-	size = sizeof(unsigned long long) * (bL_freq_table->table_size + 1);
-	bL_freq_table->time_in_state = krealloc(bL_freq_table->time_in_state,
-			size, GFP_ATOMIC);
-	if (IS_ERR(bL_freq_table->time_in_state)) {
-		pr_warn("Could not reallocate memory for freq_table\n");
-		bL_freq_table->time_in_state = NULL;
-		return;
-	}
-	bL_freq_table->freq_table[bL_freq_table->table_size] = freq;
-	bL_freq_table->time_in_state[bL_freq_table->table_size++] = 0ULL;
 }
 
 static void add_all_freq_table(unsigned int freq)
@@ -764,6 +745,8 @@ static int cpufreq_stats_setup(void)
 	if (ret)
 		return ret;
 
+	create_all_freq_table();
+
 	register_hotcpu_notifier(&cpufreq_stat_cpu_notifier);
 	for_each_online_cpu(cpu)
 		cpufreq_update_policy(cpu);
@@ -776,10 +759,10 @@ static int cpufreq_stats_setup(void)
 		unregister_hotcpu_notifier(&cpufreq_stat_cpu_notifier);
 		for_each_online_cpu(cpu)
 			cpufreq_stats_free_table(cpu);
+		free_all_freq_table();
 		return ret;
 	}
 
-	create_all_freq_table();
 	ret = sysfs_create_file(cpufreq_global_kobject,
 			&_attr_all_time_in_state.attr);
 	if (ret)
