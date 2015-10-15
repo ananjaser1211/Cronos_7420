@@ -1040,18 +1040,16 @@ static int exynos_ss_panic_handler(struct notifier_block *nb,
 	local_irq_disable();
 	exynos_ss_report_reason(ESS_SIGN_PANIC);
 	pr_emerg("exynos-snapshot: panic - reboot[%s]\n", __func__);
-	exynos_ss_dump_task_info();
 #ifdef CONFIG_EXYNOS_CORESIGHT_PC_INFO
 	memcpy(ess_log->core, exynos_cs_pc, sizeof(ess_log->core));
 #endif
 	flush_cache_all();
 #ifdef CONFIG_SEC_DEBUG
-	sec_debug_panic_handler(buf, true);
+	sec_debug_panic_handler(buf, false);
 #endif
 #else
 	exynos_ss_report_reason(ESS_SIGN_PANIC);
 	pr_emerg("exynos-snapshot: panic - normal[%s]\n", __func__);
-	exynos_ss_dump_task_info();
 	flush_cache_all();
 #endif
 	return 0;
