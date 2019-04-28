@@ -74,7 +74,7 @@ static int hpm_freq_table[] = {
 
 static gpu_attribute gpu_config_attributes[] = {
 	{GPU_MAX_CLOCK, 772},
-	{GPU_MAX_CLOCK_LIMIT, 700},
+	{GPU_MAX_CLOCK_LIMIT, 772},
 	{GPU_MIN_CLOCK, 266},
 	{GPU_DVFS_START_CLOCK, 266},
 	{GPU_DVFS_BL_CONFIG_CLOCK, 266},
@@ -99,11 +99,11 @@ static gpu_attribute gpu_config_attributes[] = {
 	{GPU_VOLTAGE_OFFSET_MARGIN, 37500},
 	{GPU_TMU_CONTROL, 1},
 	{GPU_TEMP_THROTTLING1, 544},
-	{GPU_TEMP_THROTTLING2, 350},
-	{GPU_TEMP_THROTTLING3, 266},
+	{GPU_TEMP_THROTTLING2, 420},
+	{GPU_TEMP_THROTTLING3, 350},
 	{GPU_TEMP_THROTTLING4, 266},
 	{GPU_TEMP_TRIPPING, 266},
-	{GPU_POWER_COEFF, 443}, /* all core on param */
+	{GPU_POWER_COEFF, 900}, /* all core on param */
 	{GPU_DVFS_TIME_INTERVAL, 5},
 	{GPU_DEFAULT_WAKEUP_LOCK, 1},
 	{GPU_BUS_DEVFREQ, 1},
