@@ -587,6 +587,7 @@ static struct device_attribute mdnie_attributes[] = {
 	__ATTR(accessibility, 0664, accessibility_show, accessibility_store),
 	__ATTR(color_correct, 0444, color_correct_show, NULL),
 	__ATTR(bypass, 0664, bypass_show, bypass_store),
+//	__ATTR(mdnie, 0444, mdnie_show, NULL),
 	__ATTR(sensorRGB, 0664, sensorRGB_show, sensorRGB_store),
 #if defined(CONFIG_LCD_HMT)
 	__ATTR(hmt_color_temperature, 0664, hmtColorTemp_show, hmtColorTemp_store),

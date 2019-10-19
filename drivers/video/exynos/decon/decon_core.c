@@ -1462,9 +1462,6 @@ int decon_enable(struct decon_device *decon)
 			}
 		}
 	}
-
-	if ((decon->id == 0) && (decon->state != DECON_STATE_LPD_EXIT_REQ))
-		flush_kthread_worker(&decon->update_regs_worker);
 #endif
 
 	if (decon->state != DECON_STATE_LPD_EXIT_REQ)
