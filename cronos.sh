@@ -55,6 +55,10 @@ export $CR_ARCH
 CR_DTSFILES_N920C="exynos7420-noblelte_eur_open_00.dtb exynos7420-noblelte_eur_open_01.dtb exynos7420-noblelte_eur_open_02.dtb exynos7420-noblelte_eur_open_03.dtb exynos7420-noblelte_eur_open_04.dtb exynos7420-noblelte_eur_open_05.dtb exynos7420-noblelte_eur_open_06.dtb exynos7420-noblelte_eur_open_08.dtb exynos7420-noblelte_eur_open_09.dtb"
 CR_CONFG_N920C=noblelte_defconfig
 CR_VARIANT_N920C=N920X
+# Device specific Variables [SM-G920X]
+CR_DTSFILES_G920F="exynos7420-zeroflte_eur_open_06.dtb exynos7420-zeroflte_eur_open_07.dtb"
+CR_CONFG_G920F=zeroflte_defconfig
+CR_VARIANT_G920F=G920F
 #####################################################
 
 # Script functions
@@ -75,12 +79,17 @@ else
      rm -rf $CR_DTS/*.dtb
 fi
 
+BUILD_IMAGE_NAME()
+{
+	CR_IMAGE_NAME=$CR_NAME-$CR_VERSION-$CR_VARIANT-$CR_DATE
+}
+
 BUILD_ZIMAGE()
 {
 	echo "----------------------------------------------"
 	echo " "
 	echo "Building zImage for $CR_VARIANT"
-	export LOCALVERSION=-$CR_NAME-$CR_VERSION-$CR_VARIANT-$CR_DATE
+	export LOCALVERSION=-$CR_IMAGE_NAME
 	make  $CR_CONFG
 	make -j$CR_JOBS
 	if [ ! -e ./arch/arm64/boot/Image ]; then
@@ -133,8 +142,8 @@ PACK_BOOT_IMG()
 	# Remove red warning at boot
 	echo -n "SEANDROIDENFORCE" » $CR_AIK/image-new.img
 	# Move boot.img to out dir
-	mv $CR_AIK/image-new.img $CR_OUT/$CR_NAME-$CR_VERSION-$CR_DATE-$CR_VARIANT.img
-	du -k "$CR_OUT/$CR_NAME-$CR_VERSION-$CR_DATE-$CR_VARIANT.img" | cut -f1 >sizkT
+	mv $CR_AIK/image-new.img $CR_OUT/$CR_IMAGE_NAME.img
+	du -k "$CR_OUT/$CR_IMAGE_NAME.img" | cut -f1 >sizkT
 	sizkT=$(head -n 1 sizkT)
 	rm -rf sizkT
 	echo " "
@@ -146,7 +155,7 @@ echo "----------------------------------------------"
 echo "$CR_NAME $CR_VERSION Build Script"
 echo "----------------------------------------------"
 PS3='Please select your option (1-2): '
-menuvar=("SM-N920X" "Exit")
+menuvar=("SM-N920X" "SM-G920F" "Exit")
 select menuvar in "${menuvar[@]}"
 do
     case $menuvar in
@@ -156,6 +165,7 @@ do
             CR_VARIANT=$CR_VARIANT_N920C
             CR_CONFG=$CR_CONFG_N920C
             CR_DTSFILES=$CR_DTSFILES_N920C
+            BUILD_IMAGE_NAME
             BUILD_ZIMAGE
             BUILD_DTB
             PACK_BOOT_IMG
@@ -165,7 +175,29 @@ do
             echo "Compiled DTB Size = $sizdT Kb"
             echo "Kernel Image Size = $sizT Kb"
             echo "Boot Image   Size = $sizkT Kb"
-            echo "$CR_OUT/$CR_NAME-$CR_VERSION-$CR_DATE-$CR_VARIANT.img Ready"
+            echo "$CR_OUT/$CR_IMAGE_NAME.img Ready"
+            echo "Press Any key to end the script"
+            echo "----------------------------------------------"
+            read -n1 -r key
+            break
+            ;;
+        "SM-G920F")
+            clear
+            echo "Starting $CR_VARIANT_G920F kernel build..."
+            CR_VARIANT=$CR_VARIANT_G920F
+            CR_CONFG=$CR_CONFG_G920F
+            CR_DTSFILES=$CR_DTSFILES_G920F
+            BUILD_IMAGE_NAME
+            BUILD_ZIMAGE
+            BUILD_DTB
+            PACK_BOOT_IMG
+            echo " "
+            echo "----------------------------------------------"
+            echo "$CR_VARIANT kernel build finished."
+            echo "Compiled DTB Size = $sizdT Kb"
+            echo "Kernel Image Size = $sizT Kb"
+            echo "Boot Image   Size = $sizkT Kb"
+            echo "$CR_OUT/$CR_IMAGE_NAME.img Ready"
             echo "Press Any key to end the script"
             echo "----------------------------------------------"
             read -n1 -r key
