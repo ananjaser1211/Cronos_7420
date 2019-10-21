@@ -954,7 +954,6 @@
 			#dma-channels = <8>;
 			#dma-requests = <16>;
 			#dma-mcode-addr = <0x03047000>;
-			#dma-multi-irq = <1>;
 			samsung,lpass-subip;
 			status = "ok";
 		};
@@ -2082,9 +2081,8 @@
 		boot_device@8 {
 			net_boost,label="WIFI RX";
 			net_boost,node="wlan0";
-			net_boost,table_size = <5>;
+			net_boost,table_size = <4>;
 			net_boost,table= <
-				75 1000000 0 800000 0 0 0 0 0 0
 				100 1144000 0 1066000 0 0 0 0 0 0
 				150 1456000 0 1378000 0 0 0 0 0 0
 				200 1664000 0 1586000 0 845000 400000 1 1 1
