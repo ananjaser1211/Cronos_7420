@@ -4,7 +4,9 @@ import init.baseband.rc
 import init.carrier.rc
 import init.fac.rc
 import init.gps.rc
-
+import init.spectrum.rc
+import init.helios.rc
+import atrace.rc
 
 on early-init
     mount debugfs /sys/kernel/debug /sys/kernel/debug
