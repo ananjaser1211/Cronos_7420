@@ -7,6 +7,8 @@
 #
 on early-init
     start perm
+    exec u:r:init:s0 root root -- /sbin/wifiloader.sh
+    start wifiinit
 
 on boot
 
@@ -18,10 +20,7 @@ on property:sys.boot_completed=1
    write /sys/devices/11400000.mali/power_policy "always_on"
    write /sys/devices/11400000.mali/highspeed_load 90
 
-   # WifiLoader
-   start wifiloader
-
-# PrivateMode Mountpoints     
+# PrivateMode Mountpoints
    mkdir /mnt/shell/ 0750 shell shell
    mkdir /mnt/shell/privatemode 0700 system system
    mkdir /storage/Private 0000 system system
@@ -38,6 +37,12 @@ service main /sbin/helios.sh
     disabled
 
 service initd /sbin/initd.sh
+    user root
+    seclabel u:r:init:s0
+    oneshot
+    disabled
+
+service wifiinit /sbin/wifiloader.sh
     user root
     seclabel u:r:init:s0
     oneshot

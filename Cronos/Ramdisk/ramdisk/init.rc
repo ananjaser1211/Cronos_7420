@@ -1079,7 +1079,7 @@ on boot
     chmod 0664 /sys/bus/iio/devices/invensense/control
 
     #Meta event
-    chown system radio /sys/class/sensors/sensor_dev/flush    
+    chown system radio /sys/class/sensors/sensor_dev/flush
 
 	# permission for CHARGING
 	mkdir /efs/Battery 0775 radio system
