@@ -51,18 +51,24 @@ export ANDROID_MAJOR_VERSION=$CR_ANDROID
 export PLATFORM_VERSION=$CR_PLATFORM
 export $CR_ARCH
 ##########################################
-# Device specific Variables [SM-N920CIGSLK]
+# Device specific Variables [SM-N920X]
 CR_DTSFILES_N920C="exynos7420-noblelte_eur_open_00.dtb exynos7420-noblelte_eur_open_01.dtb exynos7420-noblelte_eur_open_02.dtb exynos7420-noblelte_eur_open_03.dtb exynos7420-noblelte_eur_open_04.dtb exynos7420-noblelte_eur_open_05.dtb exynos7420-noblelte_eur_open_06.dtb exynos7420-noblelte_eur_open_08.dtb exynos7420-noblelte_eur_open_09.dtb"
-CR_CONFG_N920C=noblelte_defconfig
+CR_DTSFILES_N920T="exynos7420-noblelte_usa_00.dtb exynos7420-noblelte_usa_01.dtb exynos7420-noblelte_usa_02.dtb exynos7420-noblelte_usa_03.dtb exynos7420-noblelte_usa_04.dtb exynos7420-noblelte_usa_06.dtb exynos7420-noblelte_usa_07.dtb exynos7420-noblelte_usa_08.dtb exynos7420-noblelte_usa_09.dtb"
+CR_CONFIG_N920C=noblelte_defconfig
 CR_VARIANT_N920C=N920X
+CR_VARIANT_N920T=N920TW8
 # Device specific Variables [SM-G92X]
 CR_DTSFILES_G920F="exynos7420-zeroflte_eur_open_06.dtb exynos7420-zeroflte_eur_open_07.dtb"
-CR_VARIANT_G920F=G920F
 CR_DTSFILES_G925F="exynos7420-zerolte_eur_open_08.dtb"
+CR_VARIANT_G920F=G920F
 CR_VARIANT_G925F=G925F
-CR_CONFG_G92X=zerolte_defconfig
+CR_CONFIG_G92X=zerolte_defconfig
 CR_CONFIG_G920F=zerof_defconfig
 CR_CONFIG_G925F=zero_defconfig
+# Common configs
+CR_CONFIG_AUDIENCE=audience_defconfig
+CR_CONFIG_INTL=intl_defconfig
+CR_CONFIG_SPLIT=NULL
 #####################################################
 
 # Script functions
@@ -85,6 +91,16 @@ else
      rm -rf $CR_DIR/.config
 fi
 
+# International / US variant support
+read -p "Variant? (1 (intl) | 2 (us) > " aud
+if [ "$aud" = "us" -o "$aud" = "2" ]; then
+     echo "Build US variant"
+     CR_AUDIO="2"
+else
+     echo "Build international variant"
+     CR_AUDIO="1"
+fi
+
 BUILD_IMAGE_NAME()
 {
 	CR_IMAGE_NAME=$CR_NAME-$CR_VERSION-$CR_VARIANT-$CR_DATE
@@ -103,12 +119,21 @@ BUILD_GENERATE_CONFIG()
   fi
   echo " Copy $CR_CONFIG "
   cp -f $CR_DIR/arch/$CR_ARCH/configs/$CR_CONFIG $CR_DIR/arch/$CR_ARCH/configs/tmp_defconfig
-  if [ $CR_CONFIG_SPLIT=*_defconfig ]; then
+  if [ $CR_CONFIG_SPLIT = NULL ]; then
+    echo " No split config support! "
+  else
     echo " Copy $CR_CONFIG_SPLIT "
     cat $CR_DIR/arch/$CR_ARCH/configs/$CR_CONFIG_SPLIT >> $CR_DIR/arch/$CR_ARCH/configs/tmp_defconfig
-    echo " Set $CR_VARIANT to Combined config "
-    CR_CONFIG=tmp_defconfig
   fi
+  if [ $CR_AUDIO = 2 ]; then
+    echo " Copy $CR_CONFIG_AUDIO "
+    cat $CR_DIR/arch/$CR_ARCH/configs/$CR_CONFIG_AUDIO >> $CR_DIR/arch/$CR_ARCH/configs/tmp_defconfig
+  else
+    echo " Copy $CR_CONFIG_AUDIO "
+    cat $CR_DIR/arch/$CR_ARCH/configs/$CR_CONFIG_AUDIO >> $CR_DIR/arch/$CR_ARCH/configs/tmp_defconfig
+  fi
+  echo " Set $CR_VARIANT to generated config "
+  CR_CONFIG=tmp_defconfig
 }
 
 BUILD_ZIMAGE()
@@ -190,10 +215,20 @@ do
         "SM-N920X")
             clear
             echo "Starting $CR_VARIANT_N920C kernel build..."
-            CR_VARIANT=$CR_VARIANT_N920C
-            CR_CONFIG=$CR_CONFG_N920C
-            CR_DTSFILES=$CR_DTSFILES_N920C
+            CR_CONFIG=$CR_CONFIG_N920C
+            if [ $CR_AUDIO = "2" ]; then
+              echo " Building US variant "
+              CR_CONFIG_AUDIO=$CR_CONFIG_AUDIENCE
+              CR_VARIANT=$CR_VARIANT_N920T
+              CR_DTSFILES=$CR_DTSFILES_N920T
+            else
+              echo " Building intl variant "
+              CR_CONFIG_AUDIO=$CR_CONFIG_INTL
+              CR_VARIANT=$CR_VARIANT_N920C
+              CR_DTSFILES=$CR_DTSFILES_N920C
+            fi
             BUILD_IMAGE_NAME
+            BUILD_GENERATE_CONFIG
             BUILD_ZIMAGE
             BUILD_DTB
             PACK_BOOT_IMG
@@ -213,7 +248,7 @@ do
             clear
             echo "Starting $CR_VARIANT_G920F kernel build..."
             CR_VARIANT=$CR_VARIANT_G920F
-            CR_CONFIG=$CR_CONFG_G92X
+            CR_CONFIG=$CR_CONFIG_G92X
             CR_CONFIG_SPLIT=$CR_CONFIG_G920F
             CR_DTSFILES=$CR_DTSFILES_G920F
             BUILD_IMAGE_NAME
@@ -237,7 +272,7 @@ do
             clear
             echo "Starting $CR_VARIANT_G925F kernel build..."
             CR_VARIANT=$CR_VARIANT_G925F
-            CR_CONFIG=$CR_CONFG_G92X
+            CR_CONFIG=$CR_CONFIG_G92X
             CR_CONFIG_SPLIT=$CR_CONFIG_G925F
             CR_DTSFILES=$CR_DTSFILES_G925F
             BUILD_IMAGE_NAME
