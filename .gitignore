@@ -70,3 +70,4 @@ Cronos/out/*.img
 Cronos/R/*
 drivers/gator/gator_src_md5.h
 *.log
+tmp_defconfig
