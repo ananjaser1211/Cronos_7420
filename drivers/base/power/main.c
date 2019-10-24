@@ -592,7 +592,6 @@ static void dpm_resume_early(pm_message_t state)
 	pm_print_active_wakeup_sources();
 #endif
 
-	trace_suspend_resume(TPS("dpm_resume_early"), state.event, true);
 	mutex_lock(&dpm_list_mtx);
 	while (!list_empty(&dpm_late_early_list)) {
 		struct device *dev = to_device(dpm_late_early_list.next);
