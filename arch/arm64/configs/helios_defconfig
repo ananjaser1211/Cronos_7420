@@ -2,3 +2,4 @@
 #
 # Helios defconfig
 #
+CONFIG_MORO_SOUND=y
