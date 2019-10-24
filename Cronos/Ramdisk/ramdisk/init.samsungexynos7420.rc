@@ -4,7 +4,6 @@ import init.baseband.rc
 import init.carrier.rc
 import init.fac.rc
 import init.gps.rc
-import init.spectrum.rc
 import init.helios.rc
 import atrace.rc
 
@@ -196,7 +195,7 @@ on init
 # Thermistor
     chown system radio /sys/class/sensors/thermistor_sensor/threshold_up
     chown system radio /sys/class/sensors/thermistor_sensor/threshold_sub
-	
+
 # DATA_INJECTION
     chown system radio /sys/class/sensors/ssp_sensor/data_injection_enable
 
@@ -1085,7 +1084,7 @@ service ipsec-daemon /system/bin/IPSecService
     socket ipsec_socket stream 660 system system
     user system
     group system net_raw inet net_admin
-	
+
 # RTC logging daemon
 service rtc_log /system/bin/rtc_log.sh
     class main
