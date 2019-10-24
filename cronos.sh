@@ -61,7 +61,9 @@ CR_VARIANT_N920T=N920TW8
 CR_DTSFILES_G920F="exynos7420-zeroflte_eur_open_06.dtb exynos7420-zeroflte_eur_open_07.dtb"
 CR_DTSFILES_G925F="exynos7420-zerolte_eur_open_08.dtb"
 CR_VARIANT_G920F=G920F
+CR_VARIANT_G920T=G920TW8
 CR_VARIANT_G925F=G925F
+CR_VARIANT_G925T=G925TW8
 CR_CONFIG_G92X=zerolte_defconfig
 CR_CONFIG_G920F=zerof_defconfig
 CR_CONFIG_G925F=zero_defconfig
@@ -247,10 +249,18 @@ do
         "SM-G920F")
             clear
             echo "Starting $CR_VARIANT_G920F kernel build..."
-            CR_VARIANT=$CR_VARIANT_G920F
             CR_CONFIG=$CR_CONFIG_G92X
             CR_CONFIG_SPLIT=$CR_CONFIG_G920F
             CR_DTSFILES=$CR_DTSFILES_G920F
+            if [ $CR_AUDIO = "2" ]; then
+              echo " Building US variant "
+              CR_CONFIG_AUDIO=$CR_CONFIG_AUDIENCE
+              CR_VARIANT=$CR_VARIANT_G920T
+            else
+              echo " Building intl variant "
+              CR_CONFIG_AUDIO=$CR_CONFIG_INTL
+              CR_VARIANT=$CR_VARIANT_G920F
+            fi
             BUILD_IMAGE_NAME
             BUILD_GENERATE_CONFIG
             BUILD_ZIMAGE
@@ -271,10 +281,18 @@ do
         "SM-G925F")
             clear
             echo "Starting $CR_VARIANT_G925F kernel build..."
-            CR_VARIANT=$CR_VARIANT_G925F
             CR_CONFIG=$CR_CONFIG_G92X
             CR_CONFIG_SPLIT=$CR_CONFIG_G925F
             CR_DTSFILES=$CR_DTSFILES_G925F
+            if [ $CR_AUDIO = "2" ]; then
+              echo " Building US variant "
+              CR_CONFIG_AUDIO=$CR_CONFIG_AUDIENCE
+              CR_VARIANT=$CR_VARIANT_G925T
+            else
+              echo " Building intl variant "
+              CR_CONFIG_AUDIO=$CR_CONFIG_INTL
+              CR_VARIANT=$CR_VARIANT_G925F
+            fi
             BUILD_IMAGE_NAME
             BUILD_GENERATE_CONFIG
             BUILD_ZIMAGE
