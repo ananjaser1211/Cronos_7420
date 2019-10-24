@@ -1,0 +1,7 @@
+
+#
+# Audience earSmart codecs
+#
+CONFIG_SND_SOC_ES705=y
+CONFIG_SND_SOC_ES_I2C=y
+CONFIG_SND_SOC_ESXXX_UPDATE_VEQ_TABLE=y

@@ -1,0 +1,7 @@
+
+#
+# Audience earSmart codecs
+#
+# CONFIG_SND_SOC_ES705 is not set
+# CONFIG_SND_SOC_ES_I2C is not set
+# CONFIG_SND_SOC_ESXXX_UPDATE_VEQ_TABLE is not set
