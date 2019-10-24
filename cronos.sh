@@ -55,10 +55,14 @@ export $CR_ARCH
 CR_DTSFILES_N920C="exynos7420-noblelte_eur_open_00.dtb exynos7420-noblelte_eur_open_01.dtb exynos7420-noblelte_eur_open_02.dtb exynos7420-noblelte_eur_open_03.dtb exynos7420-noblelte_eur_open_04.dtb exynos7420-noblelte_eur_open_05.dtb exynos7420-noblelte_eur_open_06.dtb exynos7420-noblelte_eur_open_08.dtb exynos7420-noblelte_eur_open_09.dtb"
 CR_CONFG_N920C=noblelte_defconfig
 CR_VARIANT_N920C=N920X
-# Device specific Variables [SM-G920X]
+# Device specific Variables [SM-G92X]
 CR_DTSFILES_G920F="exynos7420-zeroflte_eur_open_06.dtb exynos7420-zeroflte_eur_open_07.dtb"
-CR_CONFG_G920F=zeroflte_defconfig
 CR_VARIANT_G920F=G920F
+CR_DTSFILES_G925F="exynos7420-zerolte_eur_open_08.dtb"
+CR_VARIANT_G925F=G925F
+CR_CONFG_G92X=zerolte_defconfig
+CR_CONFIG_G920F=zerof_defconfig
+CR_CONFIG_G925F=zero_defconfig
 #####################################################
 
 # Script functions
@@ -71,17 +75,40 @@ if [ "$yn" = "Y" -o "$yn" = "y" ]; then
      rm -rf $CR_DTS/.*.tmp
      rm -rf $CR_DTS/.*.cmd
      rm -rf $CR_DTS/*.dtb
+     rm -rf $CR_DIR/.config
 else
      echo "Dirty Build"
      rm -r -f $CR_DTB
      rm -rf $CR_DTS/.*.tmp
      rm -rf $CR_DTS/.*.cmd
      rm -rf $CR_DTS/*.dtb
+     rm -rf $CR_DIR/.config
 fi
 
 BUILD_IMAGE_NAME()
 {
 	CR_IMAGE_NAME=$CR_NAME-$CR_VERSION-$CR_VARIANT-$CR_DATE
+}
+
+BUILD_GENERATE_CONFIG()
+{
+  # Only use for devices that are unified with 2 or more configs
+  echo "----------------------------------------------"
+	echo " "
+	echo "Building deconfig for $CR_VARIANT"
+  echo " "
+  if [ -e $CR_DIR/arch/$CR_ARCH/configs/tmp_defconfig ]; then
+    echo " cleanup old configs "
+    rm -rf $CR_DIR/arch/$CR_ARCH/configs/tmp_defconfig
+  fi
+  echo " Copy $CR_CONFIG "
+  cp -f $CR_DIR/arch/$CR_ARCH/configs/$CR_CONFIG $CR_DIR/arch/$CR_ARCH/configs/tmp_defconfig
+  if [ $CR_CONFIG_SPLIT=*_defconfig ]; then
+    echo " Copy $CR_CONFIG_SPLIT "
+    cat $CR_DIR/arch/$CR_ARCH/configs/$CR_CONFIG_SPLIT >> $CR_DIR/arch/$CR_ARCH/configs/tmp_defconfig
+    echo " Set $CR_VARIANT to Combined config "
+    CR_CONFIG=tmp_defconfig
+  fi
 }
 
 BUILD_ZIMAGE()
@@ -90,7 +117,8 @@ BUILD_ZIMAGE()
 	echo " "
 	echo "Building zImage for $CR_VARIANT"
 	export LOCALVERSION=-$CR_IMAGE_NAME
-	make  $CR_CONFG
+	echo "Make $CR_CONFIG"
+	make $CR_CONFIG
 	make -j$CR_JOBS
 	if [ ! -e ./arch/arm64/boot/Image ]; then
 	exit 0;
@@ -163,7 +191,7 @@ do
             clear
             echo "Starting $CR_VARIANT_N920C kernel build..."
             CR_VARIANT=$CR_VARIANT_N920C
-            CR_CONFG=$CR_CONFG_N920C
+            CR_CONFIG=$CR_CONFG_N920C
             CR_DTSFILES=$CR_DTSFILES_N920C
             BUILD_IMAGE_NAME
             BUILD_ZIMAGE
@@ -185,9 +213,11 @@ do
             clear
             echo "Starting $CR_VARIANT_G920F kernel build..."
             CR_VARIANT=$CR_VARIANT_G920F
-            CR_CONFG=$CR_CONFG_G920F
+            CR_CONFIG=$CR_CONFG_G92X
+            CR_CONFIG_SPLIT=$CR_CONFIG_G920F
             CR_DTSFILES=$CR_DTSFILES_G920F
             BUILD_IMAGE_NAME
+            BUILD_GENERATE_CONFIG
             BUILD_ZIMAGE
             BUILD_DTB
             PACK_BOOT_IMG
