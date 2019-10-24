@@ -77,6 +77,7 @@ CR_CONFIG_G925F=zero_defconfig
 CR_CONFIG_AUDIENCE=audience_defconfig
 CR_CONFIG_INTL=intl_defconfig
 CR_CONFIG_SPLIT=NULL
+CR_CONFIG_HELIOS=helios_defconfig
 #####################################################
 
 # Script functions
@@ -140,6 +141,8 @@ BUILD_GENERATE_CONFIG()
     echo " Copy $CR_CONFIG_AUDIO "
     cat $CR_DIR/arch/$CR_ARCH/configs/$CR_CONFIG_AUDIO >> $CR_DIR/arch/$CR_ARCH/configs/tmp_defconfig
   fi
+  echo " Copy $CR_CONFIG_HELIOS "
+  cat $CR_DIR/arch/$CR_ARCH/configs/$CR_CONFIG_HELIOS >> $CR_DIR/arch/$CR_ARCH/configs/tmp_defconfig
   echo " Set $CR_VARIANT to generated config "
   CR_CONFIG=tmp_defconfig
 }
