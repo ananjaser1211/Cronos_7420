@@ -100,3 +100,10 @@ config CAMERA_A8XE
         default n
         help
           This camera is a8xe project.
+
+config SSRM_CAMERA_INFO
+        bool "dummy ssrm_camera_info"
+        depends on VIDEO_EXYNOS_FIMC_IS
+        default n
+        help
+          Add dummy ssrm_camera_info.
