@@ -57,6 +57,12 @@ CR_DTSFILES_N920T="exynos7420-noblelte_usa_00.dtb exynos7420-noblelte_usa_01.dtb
 CR_CONFIG_N920C=noblelte_defconfig
 CR_VARIANT_N920C=N920X
 CR_VARIANT_N920T=N920TW8
+# Device specific Variables [SM-G928X]
+CR_DTSFILES_G928X="exynos7420-zenlte_eur_open_00.dtb exynos7420-zenlte_eur_open_09.dtb"
+CR_DTSFILES_G928T="exynos7420-zenlte_usa_00.dtb exynos7420-zenlte_usa_09.dtb"
+CR_CONFIG_G928X=zenlte_defconfig
+CR_VARIANT_G928X=G928X
+CR_VARIANT_G928T=G928TW8
 # Device specific Variables [SM-G92X]
 CR_DTSFILES_G920F="exynos7420-zeroflte_eur_open_06.dtb exynos7420-zeroflte_eur_open_07.dtb"
 CR_DTSFILES_G925F="exynos7420-zerolte_eur_open_08.dtb"
@@ -209,8 +215,8 @@ clear
 echo "----------------------------------------------"
 echo "$CR_NAME $CR_VERSION Build Script"
 echo "----------------------------------------------"
-PS3='Please select your option (1-4): '
-menuvar=("SM-N920X" "SM-G920F" "SM-G925F" "Exit")
+PS3='Please select your option (1-5): '
+menuvar=("SM-N920X" "SM-G920F" "SM-G925F" "SM-G928X" "Exit")
 select menuvar in "${menuvar[@]}"
 do
     case $menuvar in
@@ -292,6 +298,38 @@ do
               echo " Building intl variant "
               CR_CONFIG_AUDIO=$CR_CONFIG_INTL
               CR_VARIANT=$CR_VARIANT_G925F
+            fi
+            BUILD_IMAGE_NAME
+            BUILD_GENERATE_CONFIG
+            BUILD_ZIMAGE
+            BUILD_DTB
+            PACK_BOOT_IMG
+            echo " "
+            echo "----------------------------------------------"
+            echo "$CR_VARIANT kernel build finished."
+            echo "Compiled DTB Size = $sizdT Kb"
+            echo "Kernel Image Size = $sizT Kb"
+            echo "Boot Image   Size = $sizkT Kb"
+            echo "$CR_OUT/$CR_IMAGE_NAME.img Ready"
+            echo "Press Any key to end the script"
+            echo "----------------------------------------------"
+            read -n1 -r key
+            break
+            ;;
+        "SM-G928X")
+            clear
+            echo "Starting $CR_VARIANT_G928X kernel build..."
+            CR_CONFIG=$CR_CONFIG_G928X
+            if [ $CR_AUDIO = "2" ]; then
+              echo " Building US variant "
+              CR_CONFIG_AUDIO=$CR_CONFIG_AUDIENCE
+              CR_VARIANT=$CR_VARIANT_G928T
+              CR_DTSFILES=$CR_DTSFILES_G928T
+            else
+              echo " Building intl variant "
+              CR_CONFIG_AUDIO=$CR_CONFIG_INTL
+              CR_VARIANT=$CR_VARIANT_G928X
+              CR_DTSFILES=$CR_DTSFILES_G928X
             fi
             BUILD_IMAGE_NAME
             BUILD_GENERATE_CONFIG
