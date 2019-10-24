@@ -182,8 +182,8 @@ clear
 echo "----------------------------------------------"
 echo "$CR_NAME $CR_VERSION Build Script"
 echo "----------------------------------------------"
-PS3='Please select your option (1-2): '
-menuvar=("SM-N920X" "SM-G920F" "Exit")
+PS3='Please select your option (1-4): '
+menuvar=("SM-N920X" "SM-G920F" "SM-G925F" "Exit")
 select menuvar in "${menuvar[@]}"
 do
     case $menuvar in
@@ -216,6 +216,30 @@ do
             CR_CONFIG=$CR_CONFG_G92X
             CR_CONFIG_SPLIT=$CR_CONFIG_G920F
             CR_DTSFILES=$CR_DTSFILES_G920F
+            BUILD_IMAGE_NAME
+            BUILD_GENERATE_CONFIG
+            BUILD_ZIMAGE
+            BUILD_DTB
+            PACK_BOOT_IMG
+            echo " "
+            echo "----------------------------------------------"
+            echo "$CR_VARIANT kernel build finished."
+            echo "Compiled DTB Size = $sizdT Kb"
+            echo "Kernel Image Size = $sizT Kb"
+            echo "Boot Image   Size = $sizkT Kb"
+            echo "$CR_OUT/$CR_IMAGE_NAME.img Ready"
+            echo "Press Any key to end the script"
+            echo "----------------------------------------------"
+            read -n1 -r key
+            break
+            ;;
+        "SM-G925F")
+            clear
+            echo "Starting $CR_VARIANT_G925F kernel build..."
+            CR_VARIANT=$CR_VARIANT_G925F
+            CR_CONFIG=$CR_CONFG_G92X
+            CR_CONFIG_SPLIT=$CR_CONFIG_G925F
+            CR_DTSFILES=$CR_DTSFILES_G925F
             BUILD_IMAGE_NAME
             BUILD_GENERATE_CONFIG
             BUILD_ZIMAGE
