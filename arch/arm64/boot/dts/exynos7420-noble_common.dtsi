@@ -2230,7 +2230,7 @@
 
 			/* Frequency table */
 			/* for level	:	1_Head */
-			input_booster,cpu_freqs = <1200000>;
+			input_booster,cpu_freqs = <1000000>;
 			input_booster,hmp_boost = <1>;
 			input_booster,kfc_freqs = <0>;
 			input_booster,mif_freqs = <0>;
@@ -2249,7 +2249,7 @@
 
 			/* Frequency table */
 			/* for level	:	1_Head */
-			input_booster,cpu_freqs = <1200000>;
+			input_booster,cpu_freqs = <1000000>;
 			input_booster,hmp_boost = <1>;
 			input_booster,kfc_freqs = <0>;
 			input_booster,mif_freqs = <0>;
@@ -2268,7 +2268,7 @@
 
 			/* Frequency table */
 			/* for level	:	1_Head, 2_Head, 2_Tail */
-			input_booster,cpu_freqs = <1200000 1200000 0>;
+			input_booster,cpu_freqs = <1000000 1000000 0>;
 			input_booster,hmp_boost = <1 1 0>;
 			input_booster,kfc_freqs = <800000 800000 1296000>;
 			input_booster,mif_freqs = <0 0 0>;
@@ -2287,7 +2287,7 @@
 
 			/* Frequency table */
 			/* for level	:	1_Head 2_Tail*/
-			input_booster,cpu_freqs = <1200000 0>;
+			input_booster,cpu_freqs = <1100000 0>;
 			input_booster,hmp_boost = <1 1>;
 			input_booster,kfc_freqs = <800000 800000>;
 			input_booster,mif_freqs = <0 0>;
@@ -2306,7 +2306,7 @@
 
 			/* Frequency table */
 			/* for level	:	1_Head 2_Tail*/
-			input_booster,cpu_freqs = <1200000 1200000>;
+			input_booster,cpu_freqs = <1100000 1100000>;
 			input_booster,hmp_boost = <1 1>;
 			input_booster,kfc_freqs = <800000 800000>;
 			input_booster,mif_freqs = <0 0>;
@@ -2325,7 +2325,7 @@
 
 			/* Frequency table */
 			/* for level	:	1_Head 2_Tail*/
-			input_booster,cpu_freqs = <1200000 0>;
+			input_booster,cpu_freqs = <1000000 0>;
 			input_booster,hmp_boost = <1 0>;
 			input_booster,kfc_freqs = <800000 1200000>;
 			input_booster,mif_freqs = <0 0>;
@@ -2344,7 +2344,7 @@
 
 			/* Frequency table */
 			/* for level	:	1_Head 2_Tail*/
-			input_booster,cpu_freqs = <1200000 0>;
+			input_booster,cpu_freqs = <1000000 0>;
 			input_booster,hmp_boost = <1 0>;
 			input_booster,kfc_freqs = <800000 0>;
 			input_booster,mif_freqs = <0 0>;
@@ -2363,7 +2363,7 @@
 
 			/* Frequency table */
 			/* for level	:	1_Head 2_Tail*/
-			input_booster,cpu_freqs = <1200000 0>;
+			input_booster,cpu_freqs = <1100000 0>;
 			input_booster,hmp_boost = <1 0>;
 			input_booster,kfc_freqs = <800000 1296000>;
 			input_booster,mif_freqs = <0 0>;
