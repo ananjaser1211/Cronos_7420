@@ -104,8 +104,6 @@ static bool migrate_one_irq(struct irq_desc *desc)
 
 	if (cpumask_any_and(affinity, cpu_online_mask) >= nr_cpu_ids)
 		ret = true;
-	else if (unlikely(d->state_use_accessors & IRQD_GIC_MULTI_TARGET))
-		return false;
 
 	/*
 	 * when using forced irq_set_affinity we must ensure that the cpu
