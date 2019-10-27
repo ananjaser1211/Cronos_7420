@@ -394,15 +394,8 @@ static ssize_t store_cmd(struct device *dev, struct device_attribute *devattr,
 		return -EINVAL;
 	}
 
-	if (strlen(buf) >= CMD_STR_LEN) {
-		pr_err("%s %s: cmd length(strlen(buf)) is over (%d,%s)!!\n",
-				SECLOG, __func__, (int)strlen(buf), buf);
-		return -EINVAL;
-	}
-
-	if (count >= (unsigned int)CMD_STR_LEN) {
-		pr_err("%s %s: cmd length(count) is over (%d,%s)!!\n",
-				SECLOG, __func__, (unsigned int)count, buf);
+	if (strlen(buf) >= CMD_STR_LEN) {		
+		printk(KERN_ERR "%s: cmd length is over (%s,%d)!!\n", __func__, buf, (int)strlen(buf));
 		return -EINVAL;
 	}
 

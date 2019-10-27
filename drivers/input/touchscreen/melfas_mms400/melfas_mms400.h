@@ -142,15 +142,6 @@
   * LPM status bitmask
   */
 #define MMS_LPM_FLAG_SPAY		(1 << 0)
-#define MMS_LPM_FLAG_AOD		(1 << 1)
-
-typedef enum {
-	SPONGE_EVENT_TYPE_SPAY			= 0x04,
-	SPONGE_EVENT_TYPE_AOD			= 0x08,
-	SPONGE_EVENT_TYPE_AOD_PRESS		= 0x09,
-	SPONGE_EVENT_TYPE_AOD_LONGPRESS		= 0x0A,
-	SPONGE_EVENT_TYPE_AOD_DOUBLETAB		= 0x0B
-} SPONGE_EVENT_TYPE;
 
 struct mms_finger {
 	unsigned char finger_state;

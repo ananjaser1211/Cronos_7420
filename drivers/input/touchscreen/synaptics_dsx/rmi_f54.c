@@ -1528,15 +1528,8 @@ static ssize_t cmd_store(struct device *dev, struct device_attribute *attr,
 	struct synaptics_rmi4_data *rmi4_data = dev_get_drvdata(dev);
 	struct factory_data *data = rmi4_data->f54->factory_data;
 
-	if (strlen(buf) >= CMD_STR_LEN) {
-		pr_err("%s %s: cmd length(strlen(buf)) is over (%d,%s)!!\n",
-				SECLOG, __func__, (int)strlen(buf), buf);
-		return -EINVAL;
-	}
-
-	if (count >= (unsigned int)CMD_STR_LEN) {
-		pr_err("%s %s: cmd length(count) is over (%d,%s)!!\n",
-				SECLOG, __func__, (unsigned int)count, buf);
+	if (strlen(buf) >= CMD_STR_LEN) {		
+		tsp_debug_err(true, &rmi4_data->i2c_client->dev, "%s: cmd length is over (%s,%d)!!\n", __func__, buf, (int)strlen(buf));
 		return -EINVAL;
 	}
 

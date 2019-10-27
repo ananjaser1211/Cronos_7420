@@ -43,6 +43,9 @@ static ssize_t scrub_position_show(struct device *dev,
 	snprintf(buff, sizeof(buff), "%d %d %d", info->scrub_id, info->scrub_x, info->scrub_y);
 
 	info->scrub_id = 0;
+	info->scrub_x = 0;
+	info->scrub_y = 0;
+
 	return snprintf(buf, PAGE_SIZE, "%s", buff);
 }
 
@@ -1026,145 +1029,6 @@ out:
 	input_info(true, &info->client->dev, "%s: %s\n", __func__, buf);
 }
 
-static void aod_enable(void *device_data)
-{
-	struct mms_ts_info *info = (struct mms_ts_info *)device_data;
-	char buf[64] = { 0 };
-
-	cmd_clear_result(info);
-
-	if (!info->dtdata->support_lpm) {
-		input_err(true, &info->client->dev, "%s not supported\n",
-			  __func__);
-		snprintf(buf, sizeof(buf), "%s", NAME_OF_UNKNOWN_CMD);
-		info->cmd_state = CMD_STATUS_NONE;
-		goto out;
-	}
-
-	if (info->cmd_param[0]) {
-		info->lowpower_mode = true;
-		info->lowpower_flag = info->lowpower_flag | MMS_LPM_FLAG_AOD;
-	} else {
-		info->lowpower_flag = info->lowpower_flag & ~(MMS_LPM_FLAG_AOD);
-		if (!info->lowpower_flag)
-			info->lowpower_mode = false;
-	}
-
-	input_info(true, &info->client->dev, "%s: %s mode, %x\n",
-		   __func__, info->lowpower_mode ? "LPM" : "normal",
-		   info->lowpower_flag);
-	snprintf(buf, sizeof(buf), "%s", "OK");
-
-out:
-	cmd_set_result(info, buf, strnlen(buf, sizeof(buf)));
-
-	mutex_lock(&info->lock);
-	info->cmd_busy = false;
-	mutex_unlock(&info->lock);
-
-	info->cmd_state = CMD_STATUS_WAITING;
-	input_info(true, &info->client->dev, "%s: %s\n", __func__, buf);
-}
-
-static void set_aod_rect(void *device_data)
-{
-	struct mms_ts_info *info = (struct mms_ts_info *)device_data;
-	char buf[64] = { 0 };
-	u8 data[11] = { 0 };
-	int i;
-
-	cmd_clear_result(info);
-
-	if (!info->enabled) {
-		input_err(true, &info->client->dev,
-			  "%s: [ERROR] Touch is stopped\n", __func__);
-		snprintf(buf, sizeof(buf), "%s", "TSP turned off");
-		info->cmd_state = CMD_STATUS_NONE;
-		goto out;
-	}
-
-	input_info(true, &info->client->dev, "%s: w:%d, h:%d, x:%d, y:%d\n",
-		   __func__, info->cmd_param[0], info->cmd_param[1],
-		   info->cmd_param[2], info->cmd_param[3]);
-
-	data[0] = MIP_R0_AOT;
-	data[1] = MIP_R0_AOT_BOX_W;
-	for (i = 0; i < 4; i++) {
-		data[i * 2 + 2] = info->cmd_param[i] & 0xFF;
-		data[i * 2 + 3] = (info->cmd_param[i] >> 8) & 0xFF;
-	}
-
-	disable_irq(info->client->irq);
-
-	if (mms_i2c_write(info, data, 10)) {
-		input_err(true, &info->client->dev,
-			  "%s [ERROR] mms_i2c_write\n", __func__);
-		snprintf(buf, sizeof(buf), "%s", "NG");
-		goto out;
-	}
-
-	snprintf(buf, sizeof(buf), "%s", "OK");
-
-out:
-	enable_irq(info->client->irq);
-
-	cmd_set_result(info, buf, strnlen(buf, sizeof(buf)));
-
-	mutex_lock(&info->lock);
-	info->cmd_busy = false;
-	mutex_unlock(&info->lock);
-
-	info->cmd_state = CMD_STATUS_WAITING;
-
-	input_info(true, &info->client->dev, "%s: %s\n", __func__, buf);
-}
-
-static void get_aod_rect(void *device_data)
-{
-	struct mms_ts_info *info = (struct mms_ts_info *)device_data;
-	char buf[64] = { 0 };
-	u8 wbuf[16];
-	u8 rbuf[16];
-	u16 rect_data[4] = { 0, };
-	int i;
-
-	cmd_clear_result(info);
-
-	disable_irq(info->client->irq);
-
-	wbuf[0] = MIP_R0_AOT;
-	wbuf[1] = MIP_R0_AOT_BOX_W;
-
-	if (mms_i2c_read(info, wbuf, 2, rbuf, 8)) {
-		input_err(true, &info->client->dev,
-			  "%s [ERROR] mms_i2c_write\n", __func__);
-		snprintf(buf, sizeof(buf), "%s", "NG");
-		goto out;
-	}
-
-	for (i = 0; i < 4; i++) {
-		rect_data[i] = (rbuf[i * 2 + 1] & 0xFF) << 8 | (rbuf[i * 2] & 0xFF);
-	}
-
-	input_info(true, &info->client->dev, "%s: w:%d, h:%d, x:%d, y:%d\n",
-		   __func__, rect_data[0], rect_data[1], rect_data[2],
-		   rect_data[3]);
-
-	snprintf(buf, sizeof(buf), "%s", "OK");
-
-out:
-	enable_irq(info->client->irq);
-
-	cmd_set_result(info, buf, strnlen(buf, sizeof(buf)));
-
-	mutex_lock(&info->lock);
-	info->cmd_busy = false;
-	mutex_unlock(&info->lock);
-
-	info->cmd_state = CMD_STATUS_WAITING;
-	input_info(true, &info->client->dev, "%s: %s\n", __func__, buf);
-}
-
 /**
  * Command : Unknown cmd
  */
@@ -1240,9 +1104,6 @@ static struct mms_cmd mms_commands[] = {
 	{MMS_CMD("get_checksum_data", get_checksum_data),},
 	{MMS_CMD("clear_cover_mode", clear_cover_mode),},
 	{MMS_CMD("spay_enable", spay_enable),},
-	{MMS_CMD("aod_enable", aod_enable),},
-	{MMS_CMD("set_aod_rect", set_aod_rect),},
-	{MMS_CMD("get_aod_rect", get_aod_rect),},
 	{MMS_CMD(NAME_OF_UNKNOWN_CMD, cmd_unknown_cmd),},
 };
 
@@ -1268,17 +1129,11 @@ static ssize_t mms_sys_cmd(struct device *dev, struct device_attribute *devattr,
 		return ret;
 	}
 
-	if (strlen(buf) >= CMD_LEN) {
-		pr_err("%s %s: cmd length(strlen(buf)) is over (%d,%s)!!\n",
-				SECLOG, __func__, (int)strlen(buf), buf);
-		return -EINVAL;
-	}
-
-	if (count >= (unsigned int)CMD_LEN) {
-		pr_err("%s %s: cmd length(count) is over (%d,%s)!!\n",
-				SECLOG, __func__, (unsigned int)count, buf);
-		return -EINVAL;
-	}
+	if (strlen(buf) >= CMD_LEN) { 
+		input_err(true, &info->client->dev, "%s: cmd length is over (%s,%d)!!\n", __func__, buf, (int)strlen(buf)); 
+		ret = -EINVAL;
+		goto ERROR; 
+	} 
 
 	input_dbg(true, &info->client->dev, "%s [START]\n", __func__);
 	input_dbg(true, &info->client->dev, "%s - input [%s]\n", __func__, buf);

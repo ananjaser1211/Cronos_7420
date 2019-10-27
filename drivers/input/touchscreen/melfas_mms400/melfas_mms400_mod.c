@@ -531,51 +531,6 @@ int mms_lowpower_mode(struct mms_ts_info *info, int on)
 		return -EIO;
 	}
 
-	/* set AOD or SPAY bit */
-	wbuf[0] = MIP_R0_AOT;
-	wbuf[1] = MIP_R0_AOT_CTRL;
-	if (mms_i2c_read(info, wbuf, 2, rbuf, 1)) {
-		input_err(true, &info->client->dev,
-			  "%s [ERROR] read %x %x, rbuf %x\n", __func__, wbuf[0],
-			  wbuf[1], rbuf[0]);
-		return -EIO;
-	}
-
-	input_info(true, &info->client->dev,
-		   "%s: AOT ctrl register=%x, flag=%x", __func__, rbuf[0],
-		   info->lowpower_flag);
-
-	wbuf[2] = rbuf[0] & (info->lowpower_flag << 1);
-
-	wbuf[0] = MIP_R0_AOT;
-	wbuf[1] = MIP_R0_AOT_CTRL;
-
-	if (mms_i2c_write(info, wbuf, 3)) {
-		input_err(true, &info->client->dev,
-			  "%s [ERROR] write %x %x %x\n", __func__, wbuf[0],
-			  wbuf[1], wbuf[2]);
-		return -EIO;
-	}
-
-	msleep(20);
-
-	if (mms_i2c_read(info, wbuf, 2, rbuf, 1)) {
-		input_err(true, &info->client->dev,
-			  "%s [ERROR] read %x %x, rbuf %x\n", __func__, wbuf[0],
-			  wbuf[1], rbuf[0]);
-		return -EIO;
-	}
-
-	input_info(true, &info->client->dev, "%s: AOT ctrl register=%x",
-		   __func__, rbuf[0]);
-
-	if (rbuf[0] != wbuf[2]) {
-		input_err(true, &info->client->dev,
-			  "%s [ERROR] not changed to %x mode, rbuf %x\n",
-			  __func__, wbuf[2], rbuf[0]);
-		return -EIO;
-	}
-
 	input_info(true, &info->client->dev, "%s: %s mode", __func__, on ? "LPM" : "normal");
 	return 0;
 }
