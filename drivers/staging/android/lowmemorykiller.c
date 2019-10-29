@@ -73,6 +73,8 @@ static int lowmem_minfree[6] = {
 };
 static int lowmem_minfree_size = 4;
 static uint32_t lowmem_lmkcount = 0;
+static int lmkd_count;
+static int lmkd_cricount;
 
 static unsigned long lowmem_deathpending_timeout;
 
@@ -541,6 +543,8 @@ module_param_array_named(adj, lowmem_adj, short, &lowmem_adj_size,
 #endif
 module_param_array_named(minfree, lowmem_minfree, uint, &lowmem_minfree_size,
 			 S_IRUGO | S_IWUSR);
+module_param_named(lmkd_count, lmkd_count, int, 0644);
+module_param_named(lmkd_cricount, lmkd_cricount, int, 0644);
 module_param_named(debug_level, lowmem_debug_level, uint, S_IRUGO | S_IWUSR);
 module_param_named(lmkcount, lowmem_lmkcount, uint, S_IRUGO);
 #ifdef OOM_COUNT_READ
