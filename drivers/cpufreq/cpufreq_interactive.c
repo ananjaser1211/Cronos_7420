@@ -62,6 +62,10 @@ struct cpufreq_interactive_cpuinfo {
 	unsigned int max_freq;
 	u64 floor_validate_time;
 	u64 hispeed_validate_time;
+	u64 pol_floor_val_time; /* policy floor_validate_time */
+	u64 loc_floor_val_time; /* per-cpu floor_validate_time */
+	u64 pol_hispeed_val_time; /* policy hispeed_validate_time */
+	u64 loc_hispeed_val_time; /* per-cpu hispeed_validate_time */
 	struct rw_semaphore enable_sem;
 	int governor_enabled;
 #ifdef CONFIG_PMU_COREMEM_RATIO
@@ -976,7 +980,6 @@ static int cpufreq_interactive_speedchange_task(void *data)
 {
 	unsigned int cpu;
 	cpumask_t tmp_mask;
-	cpumask_t policy_mask;
 	unsigned long flags;
 	struct cpufreq_interactive_cpuinfo *pcpu;
 
@@ -984,15 +987,9 @@ static int cpufreq_interactive_speedchange_task(void *data)
 		set_current_state(TASK_INTERRUPTIBLE);
 		spin_lock_irqsave(&speedchange_cpumask_lock, flags);
 
-		pcpu = &per_cpu(cpuinfo, smp_processor_id());
-		cpumask_and(&policy_mask, &speedchange_cpumask, pcpu->policy->related_cpus);
-		if (cpumask_empty(&policy_mask)) {
+		if (cpumask_empty(&speedchange_cpumask)) {
 			spin_unlock_irqrestore(&speedchange_cpumask_lock,
 					       flags);
-
-			if (kthread_should_stop())
-				break;
-
 			schedule();
 
 			if (kthread_should_stop())
@@ -1002,16 +999,18 @@ static int cpufreq_interactive_speedchange_task(void *data)
 		}
 
 		set_current_state(TASK_RUNNING);
-		cpumask_and(&tmp_mask, &speedchange_cpumask, pcpu->policy->related_cpus);
-		cpumask_andnot(&speedchange_cpumask, &speedchange_cpumask, pcpu->policy->related_cpus);
+		tmp_mask = speedchange_cpumask;
+		cpumask_clear(&speedchange_cpumask);
+
 		spin_unlock_irqrestore(&speedchange_cpumask_lock, flags);
 
 		for_each_cpu(cpu, &tmp_mask) {
 			unsigned int j;
 			unsigned int max_freq = 0;
+			struct cpufreq_interactive_cpuinfo *pjcpu;
+			u64 hvt = ~0ULL, fvt = 0;
 
 			pcpu = &per_cpu(cpuinfo, cpu);
-
 			if (!down_read_trylock(&pcpu->enable_sem))
 				continue;
 			if (!pcpu->governor_enabled) {
@@ -1020,22 +1019,34 @@ static int cpufreq_interactive_speedchange_task(void *data)
 			}
 
 			for_each_cpu(j, pcpu->policy->cpus) {
-				struct cpufreq_interactive_cpuinfo *pjcpu =
-					&per_cpu(cpuinfo, j);
+				pjcpu = &per_cpu(cpuinfo, j);
 
-				if (pjcpu->target_freq > max_freq)
+				fvt = max(fvt, pjcpu->loc_floor_val_time);
+				if (pjcpu->target_freq > max_freq) {
 					max_freq = pjcpu->target_freq;
+					hvt = pjcpu->loc_hispeed_val_time;
+				} else if (pjcpu->target_freq == max_freq) {
+					hvt = min(hvt, pjcpu->loc_hispeed_val_time);
+				}
+			}
+			for_each_cpu(j, pcpu->policy->cpus) {
+				pjcpu = &per_cpu(cpuinfo, j);
+				pjcpu->pol_floor_val_time = fvt;
 			}
 
-			if (max_freq != pcpu->policy->cur)
+			if (max_freq != pcpu->policy->cur) {
 				__cpufreq_driver_target(pcpu->policy,
 							max_freq,
 							CPUFREQ_RELATION_H);
+				for_each_cpu(j, pcpu->policy->cpus) {
+					pjcpu = &per_cpu(cpuinfo, j);
+					pjcpu->pol_hispeed_val_time = hvt;
+				}
+			}
 
 #if defined(CONFIG_CPU_THERMAL_IPA)
 			ipa_cpufreq_requested(pcpu->policy, max_freq);
 #endif
-
 			trace_cpufreq_interactive_setspeed(cpu,
 						     pcpu->target_freq,
 						     pcpu->policy->cur);
