@@ -6,6 +6,7 @@ import init.fac.rc
 import init.gps.rc
 import init.helios.rc
 import atrace.rc
+import init.power.rc
 
 on early-init
     mount debugfs /sys/kernel/debug /sys/kernel/debug
@@ -64,7 +65,7 @@ on init
     chown system radio /sys/class/sensors/light_sensor/vendor
     chown system radio /sys/class/sensors/light_sensor/name
     chown system radio /sys/class/sensors/light_sensor/coef
-
+bg_abnormal
 # Hidden_hole
     chown system radio /sys/class/sensors/hidden_hole/hh_is_exist_efs
     chown system radio /sys/class/sensors/hidden_hole/hh_ver
