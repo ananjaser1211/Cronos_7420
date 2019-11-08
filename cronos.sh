@@ -52,9 +52,9 @@ export PLATFORM_VERSION=$CR_PLATFORM
 export $CR_ARCH
 ##########################################
 # Device specific Variables [SM-N920X]
-CR_DTSFILES_N920C="exynos7420-noblelte_eur_open_00.dtb exynos7420-noblelte_eur_open_01.dtb exynos7420-noblelte_eur_open_02.dtb exynos7420-noblelte_eur_open_03.dtb exynos7420-noblelte_eur_open_04.dtb exynos7420-noblelte_eur_open_05.dtb exynos7420-noblelte_eur_open_06.dtb exynos7420-noblelte_eur_open_08.dtb exynos7420-noblelte_eur_open_09.dtb"
-CR_DTSFILES_N920T="exynos7420-noblelte_usa_00.dtb exynos7420-noblelte_usa_01.dtb exynos7420-noblelte_usa_02.dtb exynos7420-noblelte_usa_03.dtb exynos7420-noblelte_usa_04.dtb exynos7420-noblelte_usa_06.dtb exynos7420-noblelte_usa_07.dtb exynos7420-noblelte_usa_08.dtb exynos7420-noblelte_usa_09.dtb"
-CR_DTSFILES_N920P="exynos7420-noblelte_usa_cdma_00.dtb exynos7420-noblelte_usa_cdma_01.dtb exynos7420-noblelte_usa_cdma_02.dtb exynos7420-noblelte_usa_cdma_03.dtb exynos7420-noblelte_usa_cdma_04.dtb exynos7420-noblelte_usa_cdma_06.dtb exynos7420-noblelte_usa_cdma_07.dtb exynos7420-noblelte_usa_cdma_08.dtb exynos7420-noblelte_usa_cdma_09.dtb"
+CR_DTSFILES_N920C="exynos7420-noblelte_eur_open_00.dtb exynos7420-noblelte_eur_open_09.dtb"
+CR_DTSFILES_N920T="exynos7420-noblelte_usa_00.dtb exynos7420-noblelte_usa_09.dtb"
+CR_DTSFILES_N920P="exynos7420-noblelte_usa_cdma_00.dtb exynos7420-noblelte_usa_cdma_09.dtb"
 CR_CONFIG_N920C=noblelte_defconfig
 CR_CONFIG_N920P=nobleltespr_defconfig
 CR_VARIANT_N920C=N920X
