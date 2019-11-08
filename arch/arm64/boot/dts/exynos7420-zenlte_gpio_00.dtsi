@@ -382,4 +382,3 @@
 		PIN_SLP(gpr3-7, INPUT, DOWN);	/* FG_ERR */
 	};
 };
-
