@@ -54,9 +54,13 @@ export $CR_ARCH
 # Device specific Variables [SM-N920X]
 CR_DTSFILES_N920C="exynos7420-noblelte_eur_open_00.dtb exynos7420-noblelte_eur_open_01.dtb exynos7420-noblelte_eur_open_02.dtb exynos7420-noblelte_eur_open_03.dtb exynos7420-noblelte_eur_open_04.dtb exynos7420-noblelte_eur_open_05.dtb exynos7420-noblelte_eur_open_06.dtb exynos7420-noblelte_eur_open_08.dtb exynos7420-noblelte_eur_open_09.dtb"
 CR_DTSFILES_N920T="exynos7420-noblelte_usa_00.dtb exynos7420-noblelte_usa_01.dtb exynos7420-noblelte_usa_02.dtb exynos7420-noblelte_usa_03.dtb exynos7420-noblelte_usa_04.dtb exynos7420-noblelte_usa_06.dtb exynos7420-noblelte_usa_07.dtb exynos7420-noblelte_usa_08.dtb exynos7420-noblelte_usa_09.dtb"
+CR_DTSFILES_N920P="exynos7420-noblelte_usa_cdma_00.dtb exynos7420-noblelte_usa_cdma_01.dtb exynos7420-noblelte_usa_cdma_02.dtb exynos7420-noblelte_usa_cdma_03.dtb exynos7420-noblelte_usa_cdma_04.dtb exynos7420-noblelte_usa_cdma_06.dtb exynos7420-noblelte_usa_cdma_07.dtb exynos7420-noblelte_usa_cdma_08.dtb exynos7420-noblelte_usa_cdma_09.dtb"
 CR_CONFIG_N920C=noblelte_defconfig
+CR_CONFIG_N920P=nobleltespr_defconfig
 CR_VARIANT_N920C=N920X
 CR_VARIANT_N920T=N920TW8
+CR_VARIANT_N920P=N920P
+CR_RAMDISK_N920P=$CR_DIR/Cronos/Ramdisk-CDMA
 # Device specific Variables [SM-G928X]
 CR_DTSFILES_G928X="exynos7420-zenlte_eur_open_00.dtb exynos7420-zenlte_eur_open_09.dtb"
 CR_DTSFILES_G928T="exynos7420-zenlte_usa_00.dtb exynos7420-zenlte_usa_09.dtb"
@@ -137,9 +141,13 @@ BUILD_GENERATE_CONFIG()
   if [ $CR_AUDIO = 2 ]; then
     echo " Copy $CR_CONFIG_AUDIO "
     cat $CR_DIR/arch/$CR_ARCH/configs/$CR_CONFIG_AUDIO >> $CR_DIR/arch/$CR_ARCH/configs/tmp_defconfig
-  else
+  fi
+  if [ $CR_AUDIO = 1 ]; then
     echo " Copy $CR_CONFIG_AUDIO "
     cat $CR_DIR/arch/$CR_ARCH/configs/$CR_CONFIG_AUDIO >> $CR_DIR/arch/$CR_ARCH/configs/tmp_defconfig
+  fi
+  if [ $CR_AUDIO = NULL ]; then
+    echo " Skip audience/intl configs "
   fi
   echo " Copy $CR_CONFIG_HELIOS "
   cat $CR_DIR/arch/$CR_ARCH/configs/$CR_CONFIG_HELIOS >> $CR_DIR/arch/$CR_ARCH/configs/tmp_defconfig
@@ -218,8 +226,8 @@ clear
 echo "----------------------------------------------"
 echo "$CR_NAME $CR_VERSION Build Script"
 echo "----------------------------------------------"
-PS3='Please select your option (1-5): '
-menuvar=("SM-N920X" "SM-G920F" "SM-G925F" "SM-G928X" "Exit")
+PS3='Please select your option (1-6): '
+menuvar=("SM-N920X" "SM-N920P" "SM-G920F" "SM-G925F" "SM-G928X" "Exit")
 select menuvar in "${menuvar[@]}"
 do
     case $menuvar in
@@ -238,6 +246,31 @@ do
               CR_VARIANT=$CR_VARIANT_N920C
               CR_DTSFILES=$CR_DTSFILES_N920C
             fi
+            BUILD_IMAGE_NAME
+            BUILD_GENERATE_CONFIG
+            BUILD_ZIMAGE
+            BUILD_DTB
+            PACK_BOOT_IMG
+            echo " "
+            echo "----------------------------------------------"
+            echo "$CR_VARIANT kernel build finished."
+            echo "Compiled DTB Size = $sizdT Kb"
+            echo "Kernel Image Size = $sizT Kb"
+            echo "Boot Image   Size = $sizkT Kb"
+            echo "$CR_OUT/$CR_IMAGE_NAME.img Ready"
+            echo "Press Any key to end the script"
+            echo "----------------------------------------------"
+            read -n1 -r key
+            break
+            ;;
+        "SM-N920P")
+            clear
+            echo "Starting $CR_VARIANT_N920P kernel build..."
+            CR_CONFIG=$CR_CONFIG_N920P
+            CR_VARIANT=$CR_VARIANT_N920P
+            CR_DTSFILES=$CR_DTSFILES_N920P
+            CR_RAMDISK=$CR_RAMDISK_N920P
+            CR_AUDIO=NULL
             BUILD_IMAGE_NAME
             BUILD_GENERATE_CONFIG
             BUILD_ZIMAGE
