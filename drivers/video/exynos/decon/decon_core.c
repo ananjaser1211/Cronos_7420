@@ -4576,7 +4576,7 @@ int decon_doze_enable(struct decon_device *decon)
 #endif
 
 #ifdef CONFIG_FB_WINDOW_UPDATE
-	if ((decon->pdata->out_type == DECON_OUT_DSI) && (decon->need_update)) {
+	if ((decon->out_type == DECON_OUT_DSI) && (decon->need_update)) {
 		decon->need_update = false;
 		decon->update_win.x = 0;
 		decon->update_win.y = 0;
@@ -4654,7 +4654,7 @@ int decon_doze_suspend(struct decon_device *decon)
 	iovmm_deactivate(decon->dev);
 
 	/* DMA protection disable must be happen on vpp domain is alive */
-	if (psr.out_type == DECON_OUT_DSI) {
+	if (decon->out_type == DECON_OUT_DSI) {
 		decon_set_protected_content(decon, NULL);
 		decon->vpp_usage_bitmask = 0;
 		decon_vpp_stop(decon, true);
@@ -4671,7 +4671,7 @@ int decon_doze_suspend(struct decon_device *decon)
 	decon_runtime_suspend(decon->dev);
 #endif
 
-	if (psr.out_type == DECON_OUT_DSI) {
+	if (decon->out_type == DECON_OUT_DSI) {
 #if 1
 		/* stop output device (mipi-dsi or hdmi) */
 		ret = v4l2_subdev_call(decon->output_sd, video, s_stream, DSIM_REQ_DOZE_SUSPEND);
@@ -4682,7 +4682,7 @@ int decon_doze_suspend(struct decon_device *decon)
 		}
 #endif
 	}
-	if (psr.out_type == DECON_OUT_DSI) {
+	if (decon->out_type == DECON_OUT_DSI) {
 		pm_relax(decon->dev);
 		dev_warn(decon->dev, "pm_relax");
 	}
