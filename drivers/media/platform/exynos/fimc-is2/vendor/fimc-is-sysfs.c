@@ -59,6 +59,9 @@ static struct fimc_is_from_info *front_finfo = NULL;
 static struct fimc_is_cam_info cam_infos[2];
 #endif
 
+// Force Enable
+#define SSRM_CAMERA_INFO
+
 extern bool force_caldata_dump;
 #ifdef CONFIG_OIS_USE
 static bool check_ois_power = false;
