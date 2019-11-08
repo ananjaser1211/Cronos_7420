@@ -847,8 +847,6 @@ struct decon_device {
 	dma_addr_t vgr0_cb_addr;
 	dma_addr_t vgr1_cb_addr;
 
-	bool	int_fifo_status;
-
 #ifdef CONFIG_FB_DSU
 	int need_DSU_update;
 	enum decon_dsu_mode	DSU_mode;
@@ -928,6 +926,8 @@ int decon_disable(struct decon_device *decon);
 int decon_tui_protection(struct decon_device *decon, bool tui_en);
 int decon_wait_for_vsync(struct decon_device *decon, u32 timeout);
 
+
+void vpp_dump(struct decon_device *decon);
 /* internal only function API */
 int decon_fb_config_eint_for_te(struct platform_device *pdev, struct decon_device *decon);
 int decon_int_create_vsync_thread(struct decon_device *decon);

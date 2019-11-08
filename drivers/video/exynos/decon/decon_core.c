@@ -1090,7 +1090,7 @@ static int decon_get_overlap_cnt(struct decon_device *decon,
 }
 #endif
 
-static void vpp_dump(struct decon_device *decon)
+void vpp_dump(struct decon_device *decon)
 {
 	int i;
 
@@ -3682,10 +3682,6 @@ static void __decon_update_regs(struct decon_device *decon, struct decon_reg_dat
 				regs->wb_dma_buf_data.dma_addr);
 
 	decon_to_psr_info(decon, &psr);
-	if (decon->int_fifo_status == false) {
-		decon_reg_set_int_fifo(decon->id, 1);
-		decon->int_fifo_status = true;
-	}
 	decon_reg_start(decon->id, decon->pdata->dsi_mode, &psr);
 #ifdef CONFIG_DECON_MIPI_DSI_PKTGO
 	if (!decon->id) {
@@ -6224,7 +6220,6 @@ static int decon_probe(struct platform_device *pdev)
 		call_panel_ops(dsim, displayon, dsim);
 
 decon_init_done:
-		decon->int_fifo_status = false;
 		decon->ignore_vsync = false;
 		decon->disp_ss_log_level = DISP_EVENT_LEVEL_HIGH;
 		if ((decon->id == 0)  && (decon->pdata->psr_mode == DECON_MIPI_COMMAND_MODE)) {
