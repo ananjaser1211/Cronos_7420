@@ -803,22 +803,6 @@
 		};
 	};
 
-  firmware {
-		android {
-			compatible = "android,firmware";
-			fstab {
-				compatible = "android,fstab";
-				system {
-					compatible = "android,system";
-					dev = "/dev/block/platform/15570000.ufs/by-name/SYSTEM";
-					type = "ext4";
-					mnt_flags = "ro";
-					fsmgr_flags = "wait";
-				};
-			};
-		};
-	};
-
 	pinctrl@14CE0000 {
 		hs_i2c7_bus: hs-i2c7-bus {
 			samsung,pins = "gpj1-1", "gpj1-0";
