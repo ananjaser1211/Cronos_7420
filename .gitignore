@@ -70,4 +70,14 @@ Cronos/out/*.img
 Cronos/R/*
 drivers/gator/gator_src_md5.h
 *.log
+Cronos/Out/*.img
+Cronos/Out/*.zip
+Cronos/Product/*.img
+Cronos/Product/*.img
+Cronos/R/*
+Cronos/Flashable/*.zip
+Cronos/Flashable/Helios/device
+drivers/gator/gator_src_md5.h
+arch/arm64/configs/tmp_defconfig
 tmp_defconfig
+arch/arm64/boot/dts/exynos7420.dtsi
