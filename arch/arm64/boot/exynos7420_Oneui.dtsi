@@ -918,6 +918,22 @@
 		status = "disabled";
 	};
 
+  firmware {
+		android {
+			compatible = "android,firmware";
+			fstab {
+				compatible = "android,fstab";
+				system {
+					compatible = "android,system";
+					dev = "/dev/block/platform/15570000.ufs/by-name/SYSTEM";
+					type = "ext4";
+					mnt_flags = "ro";
+					fsmgr_flags = "wait";
+				};
+			};
+		};
+	};
+
 	pinctrl_0: pinctrl@10580000 {
 		compatible = "samsung,exynos7420-pinctrl";
 		reg = <0x10580000 0x1000>;
