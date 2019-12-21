@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-# Cronos Build Script V3.3
+# Cronos Build Script V4.1
 # For Exynos7420
-# Coded by BlackMesa/AnanJaser1211 @2019
+# Coded by AnanJaser1211 @2019
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -22,12 +22,16 @@ CR_DIR=$(pwd)
 CR_TC=~/Android/Toolchains/linaro-4.9.4-aarch64-linux/bin/aarch64-linux-gnu-
 # Define proper arch and dir for dts files
 CR_DTS=arch/arm64/boot/dts
+CR_DTS_TREBLE=arch/arm64/boot/exynos7420_Treble.dtsi
+CR_DTS_ONEUI=arch/arm64/boot/exynos7420_Oneui.dtsi
 # Define boot.img out dir
 CR_OUT=$CR_DIR/Cronos/out
+CR_PRODUCT=$CR_DIR/Cronos/Product
 # Presistant A.I.K Location
 CR_AIK=$CR_DIR/Cronos/A.I.K
 # Main Ramdisk Location
 CR_RAMDISK=$CR_DIR/Cronos/Ramdisk
+CR_RAMDISK_Q=$CR_DIR/Cronos/Q
 # Compiled image name and location (Image/zImage)
 CR_KERNEL=$CR_DIR/arch/arm64/boot/Image
 # Compiled dtb by dtbtool
@@ -36,7 +40,7 @@ CR_DTB=$CR_DIR/boot.img-dtb
 CR_VERSION=V4.0
 CR_NAME=CronosKernel
 # Thread count
-CR_JOBS=$((`nproc`-1))
+CR_JOBS=$(nproc --all)
 # Target android version and platform (7/n/8/o/9/p)
 CR_ANDROID=o
 CR_PLATFORM=8.0.0
@@ -89,19 +93,21 @@ CR_CONFIG_HELIOS=helios_defconfig
 read -p "Clean source (y/n) > " yn
 if [ "$yn" = "Y" -o "$yn" = "y" ]; then
      echo "Clean Build"
-     make clean && make mrproper
-     rm -r -f $CR_DTB
-     rm -rf $CR_DTS/.*.tmp
-     rm -rf $CR_DTS/.*.cmd
-     rm -rf $CR_DTS/*.dtb
-     rm -rf $CR_DIR/.config
+     CR_CLEAN="1"
 else
      echo "Dirty Build"
-     rm -r -f $CR_DTB
-     rm -rf $CR_DTS/.*.tmp
-     rm -rf $CR_DTS/.*.cmd
-     rm -rf $CR_DTS/*.dtb
-     rm -rf $CR_DIR/.config
+     CR_CLEAN="0"
+fi
+
+# Treble / OneUI
+read -p "Variant? (1 (OneUI) | 2 (OneUI Q) > " aud
+if [ "$aud" = "1" ]; then
+     echo "Build OneUI Variant"
+     CR_MODE="1"
+fi
+if [ "$aud" = "2" ]; then
+     echo "Build OneUI Q Variant"
+     CR_MODE="2"
 fi
 
 # International / US variant support
@@ -114,6 +120,33 @@ else
      CR_AUDIO="1"
 fi
 
+BUILD_CLEAN()
+{
+if [ $CR_CLEAN = 1 ]; then
+     echo " "
+     echo " Cleaning build dir"
+     make clean && make mrproper
+     rm -r -f $CR_DTB
+     rm -rf $CR_DTS/.*.tmp
+     rm -rf $CR_DTS/.*.cmd
+     rm -rf $CR_DTS/*.dtb
+     rm -rf $CR_DIR/.config
+     rm -rf $CR_DTS/exynos7420.dtsi
+     rm -rf $CR_OUT/*.img
+     rm -rf $CR_OUT/*.zip
+fi
+if [ $CR_CLEAN = 0 ]; then
+     echo " "
+     echo " Skip Full cleaning"
+     rm -r -f $CR_DTB
+     rm -rf $CR_DTS/.*.tmp
+     rm -rf $CR_DTS/.*.cmd
+     rm -rf $CR_DTS/*.dtb
+     rm -rf $CR_DIR/.config
+     rm -rf $CR_DTS/exynos7420.dtsi
+fi
+}
+
 BUILD_IMAGE_NAME()
 {
 	CR_IMAGE_NAME=$CR_NAME-$CR_VERSION-$CR_VARIANT-$CR_DATE
@@ -124,8 +157,10 @@ BUILD_GENERATE_CONFIG()
   # Only use for devices that are unified with 2 or more configs
   echo "----------------------------------------------"
 	echo " "
-	echo "Building deconfig for $CR_VARIANT"
+	echo "Building defconfig for $CR_VARIANT"
   echo " "
+  # Respect CLEAN build rules
+  BUILD_CLEAN
   if [ -e $CR_DIR/arch/$CR_ARCH/configs/tmp_defconfig ]; then
     echo " cleanup old configs "
     rm -rf $CR_DIR/arch/$CR_ARCH/configs/tmp_defconfig
@@ -138,19 +173,12 @@ BUILD_GENERATE_CONFIG()
     echo " Copy $CR_CONFIG_SPLIT "
     cat $CR_DIR/arch/$CR_ARCH/configs/$CR_CONFIG_SPLIT >> $CR_DIR/arch/$CR_ARCH/configs/tmp_defconfig
   fi
-  if [ $CR_AUDIO = 2 ]; then
+  if [ $CR_MODE != "NULL" ]; then
     echo " Copy $CR_CONFIG_AUDIO "
     cat $CR_DIR/arch/$CR_ARCH/configs/$CR_CONFIG_AUDIO >> $CR_DIR/arch/$CR_ARCH/configs/tmp_defconfig
-  fi
-  if [ $CR_AUDIO = 1 ]; then
-    echo " Copy $CR_CONFIG_AUDIO "
-    cat $CR_DIR/arch/$CR_ARCH/configs/$CR_CONFIG_AUDIO >> $CR_DIR/arch/$CR_ARCH/configs/tmp_defconfig
-  fi
-  if [ $CR_AUDIO = NULL ]; then
-    echo " Skip audience/intl configs "
   fi
   echo " Copy $CR_CONFIG_HELIOS "
-  cat $CR_DIR/arch/$CR_ARCH/configs/$CR_CONFIG_HELIOS >> $CR_DIR/arch/$CR_ARCH/configs/tmp_defconfig
+  cat $CR_DIR/arch/$CR_ARCH/configs/$CR_CONFIG_AUDIO >> $CR_DIR/arch/$CR_ARCH/configs/tmp_defconfig
   echo " Set $CR_VARIANT to generated config "
   CR_CONFIG=tmp_defconfig
 }
@@ -161,10 +189,11 @@ BUILD_ZIMAGE()
 	echo " "
 	echo "Building zImage for $CR_VARIANT"
 	export LOCALVERSION=-$CR_IMAGE_NAME
+  	cp $CR_DTB_MOUNT $CR_DTS/exynos7420.dtsi
 	echo "Make $CR_CONFIG"
 	make $CR_CONFIG
 	make -j$CR_JOBS
-	if [ ! -e ./arch/arm64/boot/Image ]; then
+	if [ ! -e $CR_KERNEL ]; then
 	exit 0;
 	echo "Image Failed to Compile"
 	echo " Abort "
@@ -192,6 +221,7 @@ BUILD_DTB()
 	rm -rf $CR_DTS/.*.tmp
 	rm -rf $CR_DTS/.*.cmd
 	rm -rf $CR_DTS/*.dtb
+	rm -rf $CR_DTS/exynos7420.dtsi
 	du -k "$CR_DTB" | cut -f1 >sizdT
 	sizdT=$(head -n 1 sizdT)
 	rm -rf sizdT
@@ -203,7 +233,6 @@ PACK_BOOT_IMG()
 	echo "----------------------------------------------"
 	echo " "
 	echo "Building Boot.img for $CR_VARIANT"
-	cp -rf $CR_RAMDISK/* $CR_AIK
 	# Copy Ramdisk
 	cp -rf $CR_RAMDISK/* $CR_AIK
 	# Move Compiled kernel and dtb to A.I.K Folder
@@ -213,6 +242,8 @@ PACK_BOOT_IMG()
 	$CR_AIK/repackimg.sh
 	# Remove red warning at boot
 	echo -n "SEANDROIDENFORCE" » $CR_AIK/image-new.img
+	# Copy boot.img to Production folder
+	cp $CR_AIK/image-new.img $CR_PRODUCT/$CR_IMAGE_NAME.img
 	# Move boot.img to out dir
 	mv $CR_AIK/image-new.img $CR_OUT/$CR_IMAGE_NAME.img
 	du -k "$CR_OUT/$CR_IMAGE_NAME.img" | cut -f1 >sizkT
@@ -220,6 +251,8 @@ PACK_BOOT_IMG()
 	rm -rf sizkT
 	echo " "
 	$CR_AIK/cleanup.sh
+	# Respect CLEAN build rules
+	BUILD_CLEAN
 }
 # Main Menu
 clear
@@ -246,6 +279,17 @@ do
               CR_VARIANT=$CR_VARIANT_N920C
               CR_DTSFILES=$CR_DTSFILES_N920C
             fi
+            if [ $CR_MODE = "1" ]; then
+              echo " Building Oneui variant "
+              CR_VARIANT=$CR_VARIANT-OneUI
+              CR_DTB_MOUNT=$CR_DTS_ONEUI
+            fi
+            if [ $CR_MODE = "2" ]; then
+              echo " Building Oneui-Q variant "
+              CR_VARIANT=$CR_VARIANT-Q
+              CR_DTB_MOUNT=$CR_DTS_TREBLE
+              CR_RAMDISK=$CR_RAMDISK_Q
+            fi
             BUILD_IMAGE_NAME
             BUILD_GENERATE_CONFIG
             BUILD_ZIMAGE
@@ -257,7 +301,7 @@ do
             echo "Compiled DTB Size = $sizdT Kb"
             echo "Kernel Image Size = $sizT Kb"
             echo "Boot Image   Size = $sizkT Kb"
-            echo "$CR_OUT/$CR_IMAGE_NAME.img Ready"
+            echo "$CR_PRODUCT/$CR_IMAGE_NAME.img Ready"
             echo "Press Any key to end the script"
             echo "----------------------------------------------"
             read -n1 -r key
@@ -282,7 +326,7 @@ do
             echo "Compiled DTB Size = $sizdT Kb"
             echo "Kernel Image Size = $sizT Kb"
             echo "Boot Image   Size = $sizkT Kb"
-            echo "$CR_OUT/$CR_IMAGE_NAME.img Ready"
+            echo "$CR_PRODUCT/$CR_IMAGE_NAME.img Ready"
             echo "Press Any key to end the script"
             echo "----------------------------------------------"
             read -n1 -r key
@@ -314,7 +358,7 @@ do
             echo "Compiled DTB Size = $sizdT Kb"
             echo "Kernel Image Size = $sizT Kb"
             echo "Boot Image   Size = $sizkT Kb"
-            echo "$CR_OUT/$CR_IMAGE_NAME.img Ready"
+            echo "$CR_PRODUCT/$CR_IMAGE_NAME.img Ready"
             echo "Press Any key to end the script"
             echo "----------------------------------------------"
             read -n1 -r key
@@ -346,7 +390,7 @@ do
             echo "Compiled DTB Size = $sizdT Kb"
             echo "Kernel Image Size = $sizT Kb"
             echo "Boot Image   Size = $sizkT Kb"
-            echo "$CR_OUT/$CR_IMAGE_NAME.img Ready"
+            echo "$CR_PRODUCT/$CR_IMAGE_NAME.img Ready"
             echo "Press Any key to end the script"
             echo "----------------------------------------------"
             read -n1 -r key
@@ -378,13 +422,13 @@ do
             echo "Compiled DTB Size = $sizdT Kb"
             echo "Kernel Image Size = $sizT Kb"
             echo "Boot Image   Size = $sizkT Kb"
-            echo "$CR_OUT/$CR_IMAGE_NAME.img Ready"
+            echo "$CR_PRODUCT/$CR_IMAGE_NAME.img Ready"
             echo "Press Any key to end the script"
             echo "----------------------------------------------"
             read -n1 -r key
             break
             ;;
-            "Exit")
+        "Exit")
             break
             ;;
         *) echo Invalid option.;;
