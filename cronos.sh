@@ -24,6 +24,7 @@ CR_TC=~/Android/Toolchains/linaro-4.9.4-aarch64-linux/bin/aarch64-linux-gnu-
 CR_DTS=arch/arm64/boot/dts
 CR_DTS_TREBLE=arch/arm64/boot/exynos7420_Treble.dtsi
 CR_DTS_ONEUI=arch/arm64/boot/exynos7420_Oneui.dtsi
+CR_DECON=$CR_DIR/drivers/video/exynos
 # Define boot.img out dir
 CR_OUT=$CR_DIR/Cronos/out
 CR_PRODUCT=$CR_DIR/Cronos/Product
@@ -50,7 +51,6 @@ CR_ARCH=arm64
 CR_DATE=$(date +%Y%m%d)
 # Init build
 export CROSS_COMPILE=$CR_TC
-# General init
 export ANDROID_MAJOR_VERSION=$CR_ANDROID
 export PLATFORM_VERSION=$CR_PLATFORM
 export $CR_ARCH
@@ -183,6 +183,23 @@ BUILD_GENERATE_CONFIG()
   CR_CONFIG=tmp_defconfig
 }
 
+BUILD_HACKS()
+{
+	echo "----------------------------------------------"
+	echo " "
+  	echo " Applying HACKS for $CR_VARIANT"
+    rm -rf $CR_DECON/decon
+    if [ $menuvar = "SM-N920X" ] || [ $menuvar = "SM-N920P" ] || [ $menuvar = "SM-G928X" ]; then
+    echo " Copy Noble Video driver"
+    cp -rf $CR_DIR/Cronos/video/decon_noble $CR_DECON/decon/
+    else
+    echo " Copy Zero Video driver"
+    cp -rf $CR_DIR/Cronos/video/decon_zero $CR_DECON/decon/
+    fi
+	echo " "
+	echo "----------------------------------------------"
+}
+
 BUILD_ZIMAGE()
 {
 	echo "----------------------------------------------"
@@ -290,6 +307,7 @@ do
               CR_DTB_MOUNT=$CR_DTS_TREBLE
               CR_RAMDISK=$CR_RAMDISK_Q
             fi
+            BUILD_HACKS
             BUILD_IMAGE_NAME
             BUILD_GENERATE_CONFIG
             BUILD_ZIMAGE
@@ -315,6 +333,7 @@ do
             CR_DTSFILES=$CR_DTSFILES_N920P
             CR_RAMDISK=$CR_RAMDISK_N920P
             CR_AUDIO=NULL
+            BUILD_HACKS
             BUILD_IMAGE_NAME
             BUILD_GENERATE_CONFIG
             BUILD_ZIMAGE
@@ -347,6 +366,18 @@ do
               CR_CONFIG_AUDIO=$CR_CONFIG_INTL
               CR_VARIANT=$CR_VARIANT_G920F
             fi
+            if [ $CR_MODE = "1" ]; then
+              echo " Building Oneui variant "
+              CR_VARIANT=$CR_VARIANT-OneUI
+              CR_DTB_MOUNT=$CR_DTS_ONEUI
+            fi
+            if [ $CR_MODE = "2" ]; then
+              echo " Building Oneui-Q variant "
+              CR_VARIANT=$CR_VARIANT-Q
+              CR_DTB_MOUNT=$CR_DTS_TREBLE
+              CR_RAMDISK=$CR_RAMDISK_Q
+            fi
+            BUILD_HACKS
             BUILD_IMAGE_NAME
             BUILD_GENERATE_CONFIG
             BUILD_ZIMAGE
@@ -379,6 +410,18 @@ do
               CR_CONFIG_AUDIO=$CR_CONFIG_INTL
               CR_VARIANT=$CR_VARIANT_G925F
             fi
+            if [ $CR_MODE = "1" ]; then
+              echo " Building Oneui variant "
+              CR_VARIANT=$CR_VARIANT-OneUI
+              CR_DTB_MOUNT=$CR_DTS_ONEUI
+            fi
+            if [ $CR_MODE = "2" ]; then
+              echo " Building Oneui-Q variant "
+              CR_VARIANT=$CR_VARIANT-Q
+              CR_DTB_MOUNT=$CR_DTS_TREBLE
+              CR_RAMDISK=$CR_RAMDISK_Q
+            fi
+            BUILD_HACKS
             BUILD_IMAGE_NAME
             BUILD_GENERATE_CONFIG
             BUILD_ZIMAGE
@@ -411,6 +454,18 @@ do
               CR_VARIANT=$CR_VARIANT_G928X
               CR_DTSFILES=$CR_DTSFILES_G928X
             fi
+            if [ $CR_MODE = "1" ]; then
+              echo " Building Oneui variant "
+              CR_VARIANT=$CR_VARIANT-OneUI
+              CR_DTB_MOUNT=$CR_DTS_ONEUI
+            fi
+            if [ $CR_MODE = "2" ]; then
+              echo " Building Oneui-Q variant "
+              CR_VARIANT=$CR_VARIANT-Q
+              CR_DTB_MOUNT=$CR_DTS_TREBLE
+              CR_RAMDISK=$CR_RAMDISK_Q
+            fi
+            BUILD_HACKS
             BUILD_IMAGE_NAME
             BUILD_GENERATE_CONFIG
             BUILD_ZIMAGE
