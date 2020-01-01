@@ -75,10 +75,10 @@ static void log_eol(uint16_t source)
 	}
 	/* MobiCore Userspace */
 	if (prev_source)
-		dev_info(mcd, "%03x|%s\n", prev_source, log_line);
+		dev_dbg(mcd, "%03x|%s\n", prev_source, log_line);
 	/* MobiCore kernel */
 	else
-		dev_info(mcd, "%s\n", log_line);
+		dev_dbg(mcd, "%s\n", log_line);
 
 	log_line_len = 0;
 	log_line[0] = 0;
