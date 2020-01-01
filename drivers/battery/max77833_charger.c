@@ -35,6 +35,11 @@ extern bool slate_mode_state;
 #define ENABLE 1
 #define DISABLE 0
 
+#if defined(CONFIG_BATTERY_CONTROL)
+int SIOP_INPUT_LIMIT_CURRENT = 1200;
+int SIOP_CHARGING_LIMIT_CURRENT = 1000;
+#endif
+
 static enum power_supply_property max77833_charger_props[] = {
 	POWER_SUPPLY_PROP_STATUS,
 	POWER_SUPPLY_PROP_PRESENT,
@@ -2379,6 +2384,10 @@ static irqreturn_t max77833_aicl_irq(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
+#if defined(CONFIG_BATTERY_CONTROL)
+bool unstable_power_detection = true;
+#endif
+
 static void max77833_chgin_isr_work(struct work_struct *work)
 {
 	struct max77833_charger_data *charger = container_of(work,
@@ -2416,7 +2425,12 @@ static void max77833_chgin_isr_work(struct work_struct *work)
 			stable_count++;
 		else
 			stable_count = 0;
+#if defined(CONFIG_BATTERY_CONTROL)
+		if (stable_count > 10 || !unstable_power_detection) {
+#else
 		if (stable_count > 10) {
+#endif
+
 #if defined(CONFIG_VBUS_NOTIFIER)
 			switch (chgin_dtls) {
 					case 0x03:

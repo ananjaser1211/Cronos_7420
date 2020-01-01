@@ -178,8 +178,10 @@ extern sec_battery_platform_data_t sec_battery_pdata;
 
 #define REDUCE_CURRENT_STEP						100
 #define MINIMUM_INPUT_CURRENT					300
+#ifndef CONFIG_BATTERY_CONTROL
 #define SIOP_INPUT_LIMIT_CURRENT                1200
 #define SIOP_CHARGING_LIMIT_CURRENT             1000
+#endif
 #define SIOP_WIRELESS_INPUT_LIMIT_CURRENT       530
 #define SIOP_WIRELESS_CHARGING_LIMIT_CURRENT    780
 #define SLOW_CHARGING_CURRENT_STANDARD          400

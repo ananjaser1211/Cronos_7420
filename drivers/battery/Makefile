@@ -19,6 +19,7 @@ obj-$(CONFIG_CHARGER_MAX77804)  += max77804_charger.o
 obj-$(CONFIG_CHARGER_MAX77693)	+= max77693_charger.o
 obj-$(CONFIG_CHARGER_MAX77823)	+= max77823_charger.o
 obj-$(CONFIG_CHARGER_MAX77843)	+= max77843_charger.o
+obj-$(CONFIG_BATTERY_CONTROL)	+= sec_control.o
 obj-$(CONFIG_CHARGER_MAX77888)	+= max77888_charger.o
 obj-$(CONFIG_CHARGER_MAX77833)	+= max77833_charger.o
 obj-$(CONFIG_CHARGER_S2MU003)   += s2mu003_charger.o
