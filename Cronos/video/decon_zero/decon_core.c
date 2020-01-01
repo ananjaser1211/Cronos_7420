@@ -61,13 +61,6 @@
 #include "../../../staging/android/sw_sync.h"
 #include "vpp/vpp_core.h"
 
-#ifdef CONFIG_CPU_BOOST
-#include <linux/cpu_input_boost.h>
-#endif
-#ifdef CONFIG_DEVFREQ_BOOST
-#include <linux/devfreq_boost.h>
-#endif
-
 #define SUCCESS_EXYNOS_SMC	2
 #define TRACE_VPP_LOG(d, prot) ({	\
 	d->vpp_log[d->log_cnt].decon_id = d->id;	\
@@ -4384,10 +4377,6 @@ windows_config:
 #if !defined(CONFIG_FB_WINDOW_UPDATE) && defined(CONFIG_EXYNOS_DECON_MDNIE)
 	if (decon->out_type == DECON_OUT_DSI && decon->mdnie->need_update)
 		decon_mdnie_frame_update(decon->mdnie, decon->lcd_info->xres, decon->lcd_info->yres);
-#endif
-
-#ifdef CONFIG_DEVFREQ_BOOST
-	devfreq_boost_kick(DEVFREQ_EXYNOS_MIF);
 #endif
 
 	for (i = 0; i < decon->pdata->max_win && !ret; i++) {
