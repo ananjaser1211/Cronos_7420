@@ -374,23 +374,19 @@ static void __init set_volt_table_CA57(void)
 				exynos7420_abb_table_CA57[i]);
 	}
 
-#if defined(CONFIG_CPU_THERMAL) && defined(CONFIG_EXYNOS5_DYNAMIC_CPU_HOTPLUG)
 	switch (exynos_get_table_ver()) {
 	case 0 :
 	case 1 :
 	case 4 :
 	case 12 :
-		max_support_idx_CA57 = L7; break;	/* 1.8GHz */
+		max_support_idx_CA57 = L2; break;	/* 2.3GHz */
 	case 5 :
-		max_support_idx_CA57 = L10; break;	/* 1.5GHz */
+		max_support_idx_CA57 = L2; break;	/* 2.3GHz */
 	default :
-		max_support_idx_CA57 = L1;		/* 2.4GHz */
+		max_support_idx_CA57 = L2;		/* 2.3GHz */
 	}
-#else
-	max_support_idx_CA57 = L13;	/* 1.2 GHz */
-#endif
 
-	min_support_idx_CA57 = L17;	/* 800 MHz */
+	min_support_idx_CA57 = L18;	/* 700 MHz */
 
 	pr_info("CPUFREQ of CA57 max_freq : L%d %u khz\n", max_support_idx_CA57,
 		exynos7420_freq_table_CA57[max_support_idx_CA57].frequency);
