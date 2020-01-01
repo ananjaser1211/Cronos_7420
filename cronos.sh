@@ -189,10 +189,11 @@ BUILD_HACKS()
 	echo " "
   	echo " Applying HACKS for $CR_VARIANT"
     rm -rf $CR_DECON/decon
-    if [ $menuvar = "SM-N920X" ] || [ $menuvar = "SM-N920P" ] || [ $menuvar = "SM-G928X" ]; then
+    if [ $CR_VIDEO = "noble" ]; then
     echo " Copy Noble Video driver"
     cp -rf $CR_DIR/Cronos/video/decon_noble $CR_DECON/decon/
-    else
+    fi
+    if [ $CR_VIDEO = "zero" ]; then
     echo " Copy Zero Video driver"
     cp -rf $CR_DIR/Cronos/video/decon_zero $CR_DECON/decon/
     fi
@@ -285,6 +286,7 @@ do
             clear
             echo "Starting $CR_VARIANT_N920C kernel build..."
             CR_CONFIG=$CR_CONFIG_N920C
+            CR_VIDEO="noble"
             if [ $CR_AUDIO = "2" ]; then
               echo " Building US variant "
               CR_CONFIG_AUDIO=$CR_CONFIG_AUDIENCE
@@ -333,6 +335,7 @@ do
             CR_DTSFILES=$CR_DTSFILES_N920P
             CR_RAMDISK=$CR_RAMDISK_N920P
             CR_AUDIO=NULL
+            CR_VIDEO="noble"
             BUILD_HACKS
             BUILD_IMAGE_NAME
             BUILD_GENERATE_CONFIG
@@ -357,6 +360,7 @@ do
             CR_CONFIG=$CR_CONFIG_G92X
             CR_CONFIG_SPLIT=$CR_CONFIG_G920F
             CR_DTSFILES=$CR_DTSFILES_G920F
+            CR_VIDEO="zero"
             if [ $CR_AUDIO = "2" ]; then
               echo " Building US variant "
               CR_CONFIG_AUDIO=$CR_CONFIG_AUDIENCE
@@ -401,6 +405,7 @@ do
             CR_CONFIG=$CR_CONFIG_G92X
             CR_CONFIG_SPLIT=$CR_CONFIG_G925F
             CR_DTSFILES=$CR_DTSFILES_G925F
+            CR_VIDEO="zero"
             if [ $CR_AUDIO = "2" ]; then
               echo " Building US variant "
               CR_CONFIG_AUDIO=$CR_CONFIG_AUDIENCE
@@ -443,6 +448,7 @@ do
             clear
             echo "Starting $CR_VARIANT_G928X kernel build..."
             CR_CONFIG=$CR_CONFIG_G928X
+            CR_VIDEO="noble"
             if [ $CR_AUDIO = "2" ]; then
               echo " Building US variant "
               CR_CONFIG_AUDIO=$CR_CONFIG_AUDIENCE
