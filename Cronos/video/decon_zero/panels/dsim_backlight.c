@@ -15,7 +15,8 @@
 
 #include "../dsim.h"
 #include "dsim_backlight.h"
-#include "panel_info.h"
+#include "s6e3hf2_wqhd_param.h"
+#include <linux/variant_detection.h>
 
 #ifdef CONFIG_PANEL_AID_DIMMING
 #include "aid_dimming.h"
@@ -319,7 +320,7 @@ static int low_level_set_brightness(struct dsim_device *dsim ,int force)
 	dsim_panel_set_tset(dsim, force);
 
 #ifdef CONFIG_LCD_ALPM
-	if (!(dsim->priv.current_alpm && dsim->priv.alpm))
+	if (!(dsim->priv.current_alpm && dsim->priv.alpm && variant_edge == IS_EDGE))
 #endif
 		dsim_panel_set_hbm(dsim, force);
 
@@ -587,7 +588,7 @@ static int low_level_set_brightness_for_hmt(struct dsim_device *dsim ,int force)
 	dsim_panel_set_elvss_for_hmt(dsim);
 
 	dsim_panel_set_vint(dsim, force);
-#if defined (CONFIG_LCD_DOZE_MODE) && defined (CONFIG_PANEL_S6E3HF2_DYNAMIC)	
+#ifdef CONFIG_LCD_DOZE_MODE	
 	if (dsim_write_hl_data(dsim, HF2_A2_IRC_off, ARRAY_SIZE(HF2_A2_IRC_off)) < 0)
 		dsim_err("%s : failed to write HF2_A2_IRC_off \n", __func__);
 #endif		

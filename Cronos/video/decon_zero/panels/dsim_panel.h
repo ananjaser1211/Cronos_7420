@@ -22,6 +22,7 @@ int dsim_panel_ops_init(struct dsim_device *dsim);
 
 /* dsim_panel_get_priv_ops() this function comes from XXXX_mipi_lcd.c */
 struct dsim_panel_ops *dsim_panel_get_priv_ops(struct dsim_device *dsim);
+struct dsim_panel_ops *dsim_panel_get_priv_ops_edge(struct dsim_device *dsim);
 
 #ifdef CONFIG_FB_DSU
 enum {

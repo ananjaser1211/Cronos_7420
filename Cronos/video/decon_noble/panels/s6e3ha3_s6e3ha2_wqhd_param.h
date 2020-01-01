@@ -1081,7 +1081,7 @@ static const unsigned char S6E3HF3_SEQ_DCDC[] = {
 };
 
 //change
-
+#if defined (CONFIG_LCD_ALPM) || defined(CONFIG_LCD_DOZE_MODE)
 
 #define	ALPM_OFF						0
 #define ALPM_ON_2NIT					1
@@ -1166,6 +1166,8 @@ static const unsigned char SEQ_SELECT_HLPM_60NIT[] = {
 	0xBB,
 	0x01
 };
+
+#endif
 
 //change
 #ifdef CONFIG_LCD_WEAKNESS_CCB

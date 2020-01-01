@@ -16,7 +16,8 @@
 
 #include "../dsim.h"
 
-#include "panel_info.h"
+//#include "panel_info.h"
+#define S6E3HF2_LCDTYPE_WQHD	0
 
 unsigned int s6e3hf2_lcd_type = S6E3HF2_LCDTYPE_WQHD;
 
@@ -26,6 +27,12 @@ unsigned int s6e3hf2_lcd_type = S6E3HF2_LCDTYPE_WQHD;
 #include "s6e3hf2_wqhd_aid_dimming.h"
 #endif
 
+#include "s6e3hf2_wqhd_param.h"
+#include <linux/variant_detection.h>
+
+#if defined(CONFIG_LCD_RES) && defined(CONFIG_FB_DSU)
+#error cannot use both of CONFIG_LCD_RES and CONFIG_FB_DSU
+#endif
 
 #ifdef CONFIG_PANEL_AID_DIMMING
 static const unsigned char *HBM_TABLE[HBM_STATUS_MAX] = {SEQ_HBM_OFF, SEQ_HBM_ON};
@@ -547,7 +554,7 @@ static int set_gamma_to_hbm(struct SmtDimInfo *brInfo, struct dim_data *dimData,
 }
 
 /* gamma interpolaion table */
-const unsigned int tbl_hbm_inter[7] = {
+const unsigned int tbl_hbm_inter_edge[7] = {
 	94, 201, 311, 431, 559, 670, 789
 };
 
@@ -594,12 +601,12 @@ static int interpolation_gamma_to_hbm(struct SmtDimInfo *dimInfo, int br_idx)
 
 				if (hbm_tmp > ref_tmp) {
 					gap = hbm_tmp - ref_tmp;
-					rst = (gap * tbl_hbm_inter[tmp]) >> 10;
+					rst = (gap * tbl_hbm_inter_edge[tmp]) >> 10;
 					rst += ref_tmp;
 				}
 				else {
 					gap = ref_tmp - hbm_tmp;
-					rst = (gap * tbl_hbm_inter[tmp]) >> 10;
+					rst = (gap * tbl_hbm_inter_edge[tmp]) >> 10;
 					rst = ref_tmp - rst;
 				}
 				result[idx++] = (unsigned char)((rst >> 8) & 0x01);
@@ -612,12 +619,12 @@ static int interpolation_gamma_to_hbm(struct SmtDimInfo *dimInfo, int br_idx)
 
 				if (hbm_tmp > ref_tmp) {
 					gap = hbm_tmp - ref_tmp;
-					rst = (gap * tbl_hbm_inter[tmp]) >> 10;
+					rst = (gap * tbl_hbm_inter_edge[tmp]) >> 10;
 					rst += ref_tmp;
 				}
 				else {
 					gap = ref_tmp - hbm_tmp;
-					rst = (gap * tbl_hbm_inter[tmp]) >> 10;
+					rst = (gap * tbl_hbm_inter_edge[tmp]) >> 10;
 					rst = ref_tmp - rst;
 				}
 				result[idx++] = (unsigned char)rst & 0xff;
@@ -810,7 +817,7 @@ static const unsigned int hmt_br_tbl[EXTEND_BRIGHTNESS + 1] = {
 	[UI_MAX_BRIGHTNESS + 1 ... EXTEND_BRIGHTNESS] = 105
 };
 
-struct SmtDimInfo a2_hmt_dimming_info[HMT_MAX_BR_INFO] = {
+struct SmtDimInfo a2_hmt_dimming_info_edge[HMT_MAX_BR_INFO] = {
 	{.br = 10, .refBr = 52, .cGma = gma2p15, .rTbl = HMTrtbl10nit, .cTbl = HMTctbl10nit, .aid = HMTaid8001, .elvCaps = HMTelvCaps, .elv = HMTelv},
 	{.br = 11, .refBr = 57, .cGma = gma2p15, .rTbl = HMTrtbl11nit, .cTbl = HMTctbl11nit, .aid = HMTaid8001, .elvCaps = HMTelvCaps, .elv = HMTelv},
 	{.br = 12, .refBr = 61, .cGma = gma2p15, .rTbl = HMTrtbl12nit, .cTbl = HMTctbl12nit, .aid = HMTaid8001, .elvCaps = HMTelvCaps, .elv = HMTelv},
@@ -916,7 +923,7 @@ static int hmt_init_dimming(struct dsim_device *dsim, u8 *mtp)
 		diminfo = a3_hmt_dimming_info;
 	} else {
 		dsim_info("%s hmt init dimming info for A2 Line Daisy panel\n", __func__);
-		diminfo = a2_hmt_dimming_info;
+		diminfo = a2_hmt_dimming_info_edge;
 	}
 
 	panel->hmt_dim_data= (void *)dimming;
@@ -1345,6 +1352,53 @@ displayon_err:
 
 }
 
+#if defined(CONFIG_FB_DSU)
+static int _s6e3hf2_wqhd_dsu_command(struct dsim_device *dsim, int xres, int yres)
+{
+	int ret = 0;
+
+	switch( xres ) {
+	case 1080:
+		ret = dsim_write_hl_data(dsim, S6E3HF2_SEQ_DDI_SCALER_FHD_00, ARRAY_SIZE(S6E3HF2_SEQ_DDI_SCALER_FHD_00));
+		if (ret < 0) {
+			dsim_err("%s : fail to write CMD : S6E3HF2_SEQ_DDI_SCALER_FHD_00\n", __func__);
+		}
+	break;
+	case 1440:
+		ret = dsim_write_hl_data(dsim, S6E3HF2_SEQ_DDI_SCALER_WQHD_00, ARRAY_SIZE(S6E3HF2_SEQ_DDI_SCALER_WQHD_00));
+		if (ret < 0) {
+			dsim_err("%s : fail to write CMD : S6E3HF2_SEQ_DDI_SCALER_WQHD_00\n", __func__);
+		}
+	break;
+	default:
+		dsim_err("%s : xres=%d, yres=%d, Unknown\n", __func__, xres, yres );
+	break;
+	}
+
+	dsim_info("%s : xres=%d, yres=%d\n", __func__, xres, yres );
+	return ret;
+}
+
+static int s6e3hf2_wqhd_dsu_command(struct dsim_device *dsim)
+{
+	int ret = 0;
+
+	ret = dsim_write_hl_data(dsim, SEQ_TEST_KEY_ON_F0, ARRAY_SIZE(SEQ_TEST_KEY_ON_F0));
+	if (ret < 0) {
+		dsim_err("%s : fail to write CMD : SEQ_TEST_KEY_ON_F0\n", __func__);
+	}
+
+	ret = _s6e3hf2_wqhd_dsu_command( dsim, dsim->dsu_xres, dsim->dsu_yres );
+
+	ret = dsim_write_hl_data(dsim, SEQ_TEST_KEY_OFF_FC, ARRAY_SIZE(SEQ_TEST_KEY_OFF_FC));
+	if (ret < 0) {
+		dsim_err("%s : fail to write CMD : SEQ_TEST_KEY_ON_FC\n", __func__);
+	}
+
+	dsim_info("%s : xres=%d, yres=%d\n", __func__, dsim->dsu_xres, dsim->dsu_yres);
+	return ret;
+}
+#endif
 
 static int s6e3hf2_wqhd_exit(struct dsim_device *dsim)
 {
@@ -1443,6 +1497,10 @@ static int s6e3hf2_wqhd_init(struct dsim_device *dsim)
 		}
 	} while( s6e3hf2_read_reg_status(dsim, false ) && cnt++ <3 );
 	// if( cnt >= 3 ) panic( "s6e3hf2_read_reg_status()" );
+
+#ifdef CONFIG_FB_DSU
+	ret = _s6e3hf2_wqhd_dsu_command( dsim, dsim->dsu_xres, dsim->dsu_yres );
+#endif
 
 #ifdef CONFIG_LCD_HMT
 	if(dsim->priv.hmt_on != HMT_ON)
@@ -1707,13 +1765,17 @@ struct dsim_panel_ops s6e3hf2_panel_ops = {
 	.exit		= s6e3hf2_wqhd_exit,
 	.init		= s6e3hf2_wqhd_init,
 	.dump 		= s6e3hf2_wqhd_dump,
+#ifdef CONFIG_FB_DSU
+	.dsu_cmd = s6e3hf2_wqhd_dsu_command,
+#endif
+
 #ifdef CONFIG_LCD_DOZE_MODE
 	.enteralpm = s6e3hf2_wqhd_enteralpm,
 	.exitalpm = s6e3hf2_wqhd_exitalpm,
 #endif
 };
 
-struct dsim_panel_ops *dsim_panel_get_priv_ops(struct dsim_device *dsim)
+struct dsim_panel_ops *dsim_panel_get_priv_ops_edge(struct dsim_device *dsim)
 {
 	return &s6e3hf2_panel_ops;
 }
@@ -1721,6 +1783,8 @@ struct dsim_panel_ops *dsim_panel_get_priv_ops(struct dsim_device *dsim)
 static int __init s6e3hf2_get_lcd_type(char *arg)
 {
 	unsigned int lcdtype;
+	if (variant_edge == NOT_EDGE)
+		return 0;
 
 	get_option(&arg, &lcdtype);
 

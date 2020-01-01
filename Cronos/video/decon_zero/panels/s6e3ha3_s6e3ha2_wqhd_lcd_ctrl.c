@@ -3643,3 +3643,6 @@ static int __init get_hw_rev(char *arg)
 }
 
 early_param("androidboot.hw_rev", get_hw_rev);
+
+
+

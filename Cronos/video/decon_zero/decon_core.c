@@ -34,12 +34,16 @@
 #include <linux/bug.h>
 #include <linux/of_address.h>
 #include <linux/smc.h>
-#ifdef CONFIG_POWERSUSPEND
-#include <linux/powersuspend.h>
-#endif
 #include <linux/debugfs.h>
 #include <linux/of_gpio.h>
 #include <linux/irq.h>
+#ifdef CONFIG_STATE_NOTIFIER
+#include <linux/state_notifier.h>
+#endif
+
+#ifdef CONFIG_POWERSUSPEND
+#include <linux/powersuspend.h>
+#endif
 
 #include <mach/regs-clock.h>
 #include <mach/exynos-pm.h>
@@ -56,6 +60,13 @@
 #include "mdnie_reg.h"
 #include "../../../staging/android/sw_sync.h"
 #include "vpp/vpp_core.h"
+
+#ifdef CONFIG_CPU_BOOST
+#include <linux/cpu_input_boost.h>
+#endif
+#ifdef CONFIG_DEVFREQ_BOOST
+#include <linux/devfreq_boost.h>
+#endif
 
 #define SUCCESS_EXYNOS_SMC	2
 #define TRACE_VPP_LOG(d, prot) ({	\
@@ -1207,24 +1218,23 @@ static int decon_reg_ddi_partial_cmd(struct decon_device *decon, struct decon_wi
 	/* TODO: need to set DSI_IDX */
 	decon_reg_wait_linecnt_is_zero_timeout(decon->id, 0, 35 * 1000);
 	DISP_SS_EVENT_LOG(DISP_EVT_LINECNT_ZERO, &decon->sd, ktime_set(0, 0));
-#ifdef CONFIG_DECON_MIPI_DSI_PKTGO
-	ret = v4l2_subdev_call(decon->output_sd, core, ioctl, DSIM_IOC_PKT_GO_DISABLE, NULL);
-	if (ret)
-		decon_err("Failed to disable Packet-go in %s\n", __func__);
-#endif
 
 #ifdef CONFIG_FB_DSU
 	if( decon->need_DSU_update != DECON_DSU_DONE )
 		decon_dsu_handler(decon);
 #endif
-
+	
 	/* Partial Command */
 	win_rect.x = rect->x;
 	win_rect.y = rect->y;
 	/* w is right & h is bottom */
 	win_rect.w = rect->x + rect->w - 1;
 	win_rect.h = rect->y + rect->h - 1;
-
+#ifdef CONFIG_DECON_MIPI_DSI_PKTGO
+	ret = v4l2_subdev_call(decon->output_sd, core, ioctl, DSIM_IOC_PKT_GO_DISABLE, NULL);
+	if (ret)
+		decon_err("Failed to disable Packet-go in %s\n", __func__);
+#endif
 	ret = v4l2_subdev_call(decon->output_sd, core, ioctl,
 			DSIM_IOC_PARTIAL_CMD, &win_rect);
 	if (ret) {
@@ -1857,23 +1867,29 @@ static int decon_blank(int blank_mode, struct fb_info *info)
 		DISP_SS_EVENT_LOG(DISP_EVT_BLANK, &decon->sd, ktime_set(0, 0));
 		ret = decon_disable(decon);
 #ifdef CONFIG_POWERSUSPEND
- 		set_power_suspend_state_panel_hook(POWER_SUSPEND_ACTIVE);
-#endif				
+		set_power_suspend_state_panel_hook(POWER_SUSPEND_ACTIVE);
+#endif
 		if (ret) {
 			decon_err("failed to disable decon\n");
 			goto blank_exit;
 		}
+#ifdef CONFIG_STATE_NOTIFIER
+		state_suspend();
+#endif
 		break;
 	case FB_BLANK_UNBLANK:
 		DISP_SS_EVENT_LOG(DISP_EVT_UNBLANK, &decon->sd, ktime_set(0, 0));
 		ret = decon_enable(decon);
 #ifdef CONFIG_POWERSUSPEND
- 		set_power_suspend_state_panel_hook(POWER_SUSPEND_INACTIVE);
-#endif				
+		set_power_suspend_state_panel_hook(POWER_SUSPEND_INACTIVE);
+#endif
 		if (ret) {
 			decon_err("failed to enable decon\n");
 			goto blank_exit;
 		}
+#ifdef CONFIG_STATE_NOTIFIER
+		state_resume();
+#endif
 		break;
 	case FB_BLANK_VSYNC_SUSPEND:
 	case FB_BLANK_HSYNC_SUSPEND:
@@ -4082,7 +4098,7 @@ static void decon_change_lcdinfo_by_DSU( struct decon_device *decon, int DSU_mod
 			decon->lcd_info->xres = 720;
 			decon->lcd_info->yres = 1280;
 			break;
-		default:
+		default: 
 			pr_err( "%s: unknown case %d(%d,%d).\n", __func__, DSU_mode, decon->DSU_rect.w, decon->DSU_rect.h );
 		break;
 		}
@@ -4110,7 +4126,7 @@ static void decon_dsu_handler(struct decon_device *decon)
 	/* 1 frame delay after Display-off : change of PPS is showing at once. therefore, PPS change must be next frame of display-off */
 	v4l2_subdev_call(decon->output_sd, core, ioctl, DSIM_IOC_DISPLAY_ONOFF, (void*) 0);
 	usleep_range(17000, 17000);
-#endif
+#endif	
 
 	loop_out = false;
 	while( !loop_out ) {
@@ -4258,7 +4274,7 @@ static int decon_set_win_config(struct decon_device *decon,
 	if( decon->dsu_lock_cnt > 0  ) {
 		decon->dsu_lock_cnt--;
 		if( decon->dsu_lock_cnt == 0 ) {
-#ifdef CONFIG_FB_DSU_NOT_SEAMLESS
+#ifdef CONFIG_FB_DSU_NOT_SEAMLESS			
 			v4l2_subdev_call(decon->output_sd, core, ioctl, DSIM_IOC_DISPLAY_ONOFF, (void*) 1);
 #endif
 		}
@@ -4368,6 +4384,10 @@ windows_config:
 #if !defined(CONFIG_FB_WINDOW_UPDATE) && defined(CONFIG_EXYNOS_DECON_MDNIE)
 	if (decon->out_type == DECON_OUT_DSI && decon->mdnie->need_update)
 		decon_mdnie_frame_update(decon->mdnie, decon->lcd_info->xres, decon->lcd_info->yres);
+#endif
+
+#ifdef CONFIG_DEVFREQ_BOOST
+	devfreq_boost_kick(DEVFREQ_EXYNOS_MIF);
 #endif
 
 	for (i = 0; i < decon->pdata->max_win && !ret; i++) {
