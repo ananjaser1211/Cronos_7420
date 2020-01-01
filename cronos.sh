@@ -201,6 +201,19 @@ BUILD_HACKS()
 	echo "----------------------------------------------"
 }
 
+BUILD_OUT()
+{
+    echo " "
+    echo "----------------------------------------------"
+    echo "$CR_VARIANT kernel build finished."
+    echo "Compiled DTB Size = $sizdT Kb"
+    echo "Kernel Image Size = $sizT Kb"
+    echo "Boot Image   Size = $sizkT Kb"
+    echo "$CR_PRODUCT/$CR_IMAGE_NAME.img Ready"
+    echo "Press Any key to end the script"
+    echo "----------------------------------------------"
+}
+
 BUILD_ZIMAGE()
 {
 	echo "----------------------------------------------"
@@ -315,15 +328,7 @@ do
             BUILD_ZIMAGE
             BUILD_DTB
             PACK_BOOT_IMG
-            echo " "
-            echo "----------------------------------------------"
-            echo "$CR_VARIANT kernel build finished."
-            echo "Compiled DTB Size = $sizdT Kb"
-            echo "Kernel Image Size = $sizT Kb"
-            echo "Boot Image   Size = $sizkT Kb"
-            echo "$CR_PRODUCT/$CR_IMAGE_NAME.img Ready"
-            echo "Press Any key to end the script"
-            echo "----------------------------------------------"
+            BUILD_OUT
             read -n1 -r key
             break
             ;;
@@ -342,15 +347,7 @@ do
             BUILD_ZIMAGE
             BUILD_DTB
             PACK_BOOT_IMG
-            echo " "
-            echo "----------------------------------------------"
-            echo "$CR_VARIANT kernel build finished."
-            echo "Compiled DTB Size = $sizdT Kb"
-            echo "Kernel Image Size = $sizT Kb"
-            echo "Boot Image   Size = $sizkT Kb"
-            echo "$CR_PRODUCT/$CR_IMAGE_NAME.img Ready"
-            echo "Press Any key to end the script"
-            echo "----------------------------------------------"
+            BUILD_OUT
             read -n1 -r key
             break
             ;;
@@ -387,15 +384,7 @@ do
             BUILD_ZIMAGE
             BUILD_DTB
             PACK_BOOT_IMG
-            echo " "
-            echo "----------------------------------------------"
-            echo "$CR_VARIANT kernel build finished."
-            echo "Compiled DTB Size = $sizdT Kb"
-            echo "Kernel Image Size = $sizT Kb"
-            echo "Boot Image   Size = $sizkT Kb"
-            echo "$CR_PRODUCT/$CR_IMAGE_NAME.img Ready"
-            echo "Press Any key to end the script"
-            echo "----------------------------------------------"
+            BUILD_OUT
             read -n1 -r key
             break
             ;;
@@ -432,15 +421,7 @@ do
             BUILD_ZIMAGE
             BUILD_DTB
             PACK_BOOT_IMG
-            echo " "
-            echo "----------------------------------------------"
-            echo "$CR_VARIANT kernel build finished."
-            echo "Compiled DTB Size = $sizdT Kb"
-            echo "Kernel Image Size = $sizT Kb"
-            echo "Boot Image   Size = $sizkT Kb"
-            echo "$CR_PRODUCT/$CR_IMAGE_NAME.img Ready"
-            echo "Press Any key to end the script"
-            echo "----------------------------------------------"
+            BUILD_OUT
             read -n1 -r key
             break
             ;;
@@ -477,15 +458,7 @@ do
             BUILD_ZIMAGE
             BUILD_DTB
             PACK_BOOT_IMG
-            echo " "
-            echo "----------------------------------------------"
-            echo "$CR_VARIANT kernel build finished."
-            echo "Compiled DTB Size = $sizdT Kb"
-            echo "Kernel Image Size = $sizT Kb"
-            echo "Boot Image   Size = $sizkT Kb"
-            echo "$CR_PRODUCT/$CR_IMAGE_NAME.img Ready"
-            echo "Press Any key to end the script"
-            echo "----------------------------------------------"
+            BUILD_OUT
             read -n1 -r key
             break
             ;;
