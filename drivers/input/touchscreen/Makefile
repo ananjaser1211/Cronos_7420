@@ -79,3 +79,5 @@ obj-$(CONFIG_TOUCHSCREEN_FTS)		+= stm/
 obj-$(CONFIG_TOUCHSCREEN_FTS5AD56)		+= stm/fts5ad56/
 obj-$(CONFIG_TOUCHSCREEN_MELFAS_MMS438)	+= melfas_mms400/
 obj-$(CONFIG_TOUCHSCREEN_MELFAS_MMS449)	+= melfas_mms400/
+obj-$(CONFIG_STATE_NOTIFIER)		+= state_notifier.o
+obj-$(CONFIG_TOUCHSCREEN_DOUBLETAP2WAKE)	+= doubletap2wake.o
