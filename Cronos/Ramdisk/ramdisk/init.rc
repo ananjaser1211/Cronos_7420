@@ -932,6 +932,10 @@ on zygote-start && property:ro.crypto.state=encrypted && property:ro.crypto.type
     start zygote_secondary
 
 on boot
+
+    # Restore the previous batt_capacity_max (if it exists)
+    copy /efs/Battery/prev_batt_capacity_max /sys/class/power_supply/battery/batt_capacity_max
+
     # KNOX KAP
     chown system system /dev/knox_kap
     chmod 0644 /dev/knox_kap
@@ -2078,3 +2082,8 @@ on property:sys.do_restorecon_user=*
 # s.fan - hide carrier apps
 on property:ro.csc.sales_code=*
     mount none /system/carrier/${ro.csc.sales_code} /system/carrier bind
+
+on shutdown
+    # Fix permissions then store the current batt_capacity_max value in the EFS partition
+    chmod 600 /sys/class/power_supply/battery/batt_capacity_max
+    copy /sys/class/power_supply/battery/batt_capacity_max /efs/Battery/prev_batt_capacity_max
