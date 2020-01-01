@@ -1178,8 +1178,6 @@ static int exynos_cpufreq_cpu_init(struct cpufreq_policy *policy)
 	if (!ret) {
 		policy->min = cur == CL_ONE ? CL1_MIN_FREQ : CL0_MIN_FREQ;
 		policy->max = cur == CL_ONE ? CL1_MAX_FREQ : CL0_MAX_FREQ;
-		policy->user_min = policy->min;
-		policy->user_max = policy->max;
 	}
 
 	return ret;
