@@ -35,7 +35,7 @@ extern bool slate_mode_state;
 #define ENABLE 1
 #define DISABLE 0
 
-#if defined(CONFIG_BATTERY_CONTROL) && !defined(CONFIG_CHARGER_MAX77843)
+#ifndef CONFIG_BATTERY_CONTROL && ifndef CONFIG_CHARGER_MAX77843
 int SIOP_INPUT_LIMIT_CURRENT = 1200;
 int SIOP_CHARGING_LIMIT_CURRENT = 1000;
 #endif
