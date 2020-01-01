@@ -290,8 +290,8 @@ clear
 echo "----------------------------------------------"
 echo "$CR_NAME $CR_VERSION Build Script"
 echo "----------------------------------------------"
-PS3='Please select your option (1-6): '
-menuvar=("SM-N920X" "SM-N920P" "SM-G920F" "SM-G925F" "SM-G928X" "Exit")
+PS3='Please select your option (1-7): '
+menuvar=("SM-N920X" "SM-N920P" "SM-G920F" "SM-G925F" "SM-G928X" "ALL" "Exit")
 select menuvar in "${menuvar[@]}"
 do
     case $menuvar in
@@ -440,6 +440,138 @@ do
               CR_CONFIG_AUDIO=$CR_CONFIG_INTL
               CR_VARIANT=$CR_VARIANT_G928X
               CR_DTSFILES=$CR_DTSFILES_G928X
+            fi
+            if [ $CR_MODE = "1" ]; then
+              echo " Building Oneui variant "
+              CR_VARIANT=$CR_VARIANT-OneUI
+              CR_DTB_MOUNT=$CR_DTS_ONEUI
+            fi
+            if [ $CR_MODE = "2" ]; then
+              echo " Building Oneui-Q variant "
+              CR_VARIANT=$CR_VARIANT-Q
+              CR_DTB_MOUNT=$CR_DTS_TREBLE
+              CR_RAMDISK=$CR_RAMDISK_Q
+            fi
+            BUILD_HACKS
+            BUILD_IMAGE_NAME
+            BUILD_GENERATE_CONFIG
+            BUILD_ZIMAGE
+            BUILD_DTB
+            PACK_BOOT_IMG
+            BUILD_OUT
+            read -n1 -r key
+            break
+            ;;
+        "ALL")
+            echo "Starting $CR_VARIANT_N920C kernel build..."
+            CR_CONFIG=$CR_CONFIG_N920C
+            CR_VIDEO="noble"
+            if [ $CR_AUDIO = "2" ]; then
+              echo " Building US variant "
+              CR_CONFIG_AUDIO=$CR_CONFIG_AUDIENCE
+              CR_VARIANT=$CR_VARIANT_N920T
+              CR_DTSFILES=$CR_DTSFILES_N920T
+            else
+              echo " Building intl variant "
+              CR_CONFIG_AUDIO=$CR_CONFIG_INTL
+              CR_VARIANT=$CR_VARIANT_N920C
+              CR_DTSFILES=$CR_DTSFILES_N920C
+            fi
+            if [ $CR_MODE = "1" ]; then
+              echo " Building Oneui variant "
+              CR_VARIANT=$CR_VARIANT-OneUI
+              CR_DTB_MOUNT=$CR_DTS_ONEUI
+            fi
+            if [ $CR_MODE = "2" ]; then
+              echo " Building Oneui-Q variant "
+              CR_VARIANT=$CR_VARIANT-Q
+              CR_DTB_MOUNT=$CR_DTS_TREBLE
+              CR_RAMDISK=$CR_RAMDISK_Q
+            fi
+            BUILD_HACKS
+            BUILD_IMAGE_NAME
+            BUILD_GENERATE_CONFIG
+            BUILD_ZIMAGE
+            BUILD_DTB
+            PACK_BOOT_IMG
+            BUILD_OUT
+            echo "Starting $CR_VARIANT_G928X kernel build..."
+            CR_CONFIG=$CR_CONFIG_G928X
+            CR_VIDEO="noble"
+            if [ $CR_AUDIO = "2" ]; then
+              echo " Building US variant "
+              CR_CONFIG_AUDIO=$CR_CONFIG_AUDIENCE
+              CR_VARIANT=$CR_VARIANT_G928T
+              CR_DTSFILES=$CR_DTSFILES_G928T
+            else
+              echo " Building intl variant "
+              CR_CONFIG_AUDIO=$CR_CONFIG_INTL
+              CR_VARIANT=$CR_VARIANT_G928X
+              CR_DTSFILES=$CR_DTSFILES_G928X
+            fi
+            if [ $CR_MODE = "1" ]; then
+              echo " Building Oneui variant "
+              CR_VARIANT=$CR_VARIANT-OneUI
+              CR_DTB_MOUNT=$CR_DTS_ONEUI
+            fi
+            if [ $CR_MODE = "2" ]; then
+              echo " Building Oneui-Q variant "
+              CR_VARIANT=$CR_VARIANT-Q
+              CR_DTB_MOUNT=$CR_DTS_TREBLE
+              CR_RAMDISK=$CR_RAMDISK_Q
+            fi
+            BUILD_HACKS
+            BUILD_IMAGE_NAME
+            BUILD_GENERATE_CONFIG
+            BUILD_ZIMAGE
+            BUILD_DTB
+            PACK_BOOT_IMG
+            BUILD_OUT
+            echo "Starting $CR_VARIANT_G920F kernel build..."
+            CR_CONFIG=$CR_CONFIG_G92X
+            CR_CONFIG_SPLIT=$CR_CONFIG_G920F
+            CR_DTSFILES=$CR_DTSFILES_G920F
+            CR_VIDEO="zero"
+            if [ $CR_AUDIO = "2" ]; then
+              echo " Building US variant "
+              CR_CONFIG_AUDIO=$CR_CONFIG_AUDIENCE
+              CR_VARIANT=$CR_VARIANT_G920T
+            else
+              echo " Building intl variant "
+              CR_CONFIG_AUDIO=$CR_CONFIG_INTL
+              CR_VARIANT=$CR_VARIANT_G920F
+            fi
+            if [ $CR_MODE = "1" ]; then
+              echo " Building Oneui variant "
+              CR_VARIANT=$CR_VARIANT-OneUI
+              CR_DTB_MOUNT=$CR_DTS_ONEUI
+            fi
+            if [ $CR_MODE = "2" ]; then
+              echo " Building Oneui-Q variant "
+              CR_VARIANT=$CR_VARIANT-Q
+              CR_DTB_MOUNT=$CR_DTS_TREBLE
+              CR_RAMDISK=$CR_RAMDISK_Q
+            fi
+            BUILD_HACKS
+            BUILD_IMAGE_NAME
+            BUILD_GENERATE_CONFIG
+            BUILD_ZIMAGE
+            BUILD_DTB
+            PACK_BOOT_IMG
+            BUILD_OUT
+            echo "Starting $CR_VARIANT_G925F kernel build..."
+            CR_CONFIG=$CR_CONFIG_G92X
+            CR_CONFIG_SPLIT=$CR_CONFIG_G925F
+            CR_DTSFILES=$CR_DTSFILES_G925F
+            CR_VIDEO="zero"
+            if [ $CR_AUDIO = "2" ]; then
+              echo " Building US variant "
+              CR_CONFIG_AUDIO=$CR_CONFIG_AUDIENCE
+              CR_VARIANT=$CR_VARIANT_G925T
+            else
+              echo " Building intl variant "
+              CR_CONFIG_AUDIO=$CR_CONFIG_INTL
+              CR_VARIANT=$CR_VARIANT_G925F
             fi
             if [ $CR_MODE = "1" ]; then
               echo " Building Oneui variant "
