@@ -483,13 +483,7 @@ static void cpufreq_interactive_timer(unsigned long data)
 	unsigned int index;
 	unsigned long flags;
 	bool boosted;
-#ifdef CONFIG_MODE_AUTO_CHANGE
-	unsigned int new_mode;
-#endif
-#ifdef CONFIG_PMU_COREMEM_RATIO
-	struct pmu_count_value pmu_data;
-	int region = 0;
-#endif
+
 	if (!down_read_trylock(&pcpu->enable_sem))
 		return;
 	if (!pcpu->governor_enabled)
@@ -503,22 +497,7 @@ static void cpufreq_interactive_timer(unsigned long data)
 
 	if (WARN_ON_ONCE(!delta_time))
 		goto rearm;
-#ifdef CONFIG_MODE_AUTO_CHANGE
-	spin_lock_irqsave(&tunables->mode_lock, flags);
-	if (tunables->enforced_mode)
-		new_mode = tunables->enforced_mode;
-	else
-		new_mode = check_mode(data, tunables->mode, now);
 
-	if (new_mode != tunables->mode) {
-		tunables->mode = new_mode;
-		if (new_mode & MULTI_MODE || new_mode & SINGLE_MODE)
-			enter_mode(tunables);
-		else
-			exit_mode(tunables);
-	}
-	spin_unlock_irqrestore(&tunables->mode_lock, flags);
-#endif
 	spin_lock_irqsave(&pcpu->target_freq_lock, flags);
 	do_div(cputime_speedadj, delta_time);
 	loadadjfreq = (unsigned int)cputime_speedadj * 100;
