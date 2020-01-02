@@ -11,7 +11,6 @@
 /(vendor|system/vendor)/bin/mcpsd		u:object_r:mcpsd_exec:s0
 /(vendor|system/vendor)/bin/wlbtd		u:object_r:wlbtd_exec:s0
 /(vendor|system/vendor)/bin/rpmbd		u:object_r:rpmbd_exec:s0
-/(vendor|system/vendor)/bin/argosd		u:object_r:argosd_exec:s0
 /(vendor|system/vendor)/bin/hw/lhd		u:object_r:lhd_exec:s0
 /(vendor|system/vendor)/bin/wvkprov		u:object_r:wvkprov_exec:s0
 /(vendor|system/vendor)/bin/hw/gpsd		u:object_r:gpsd_exec:s0

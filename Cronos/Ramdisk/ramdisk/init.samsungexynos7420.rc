@@ -1073,9 +1073,6 @@ service sensorhubservice /system/bin/sensorhubservice
 # Permission for DRM Key
     chmod 0644 /factory/wv.keys
 
-# ARGOSD network_throughput
-    chown system system /dev/network_throughput
-
 # TSP & Pressure Sensor
     #chown system system /sys/class/sec/tsp/brane
     #chmod 0660 /sys/class/sec/tsp/brane
@@ -1090,12 +1087,6 @@ service DIAG-daemon /system/bin/diagexe
 on firmware
     mount_all /fstab.samsungexynos7420.fwup
     class_start firmware_update
-
-# ARGOSD
-service argos-daemon /vendor/bin/argosd
-    class main
-    user system
-    group system radio
 
 service prepare_param /system/bin/prepare_param.sh /dev/block/platform/15570000.ufs/by-name/PARAM
     class core
