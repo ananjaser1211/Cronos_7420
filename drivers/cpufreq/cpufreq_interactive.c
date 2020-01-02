@@ -644,18 +644,7 @@ static void cpufreq_interactive_idle_end(void)
 	up_read(&pcpu->enable_sem);
 }
 
-#ifdef CONFIG_PMU_COREMEM_RATIO
-static void region_update_status(struct cpufreq_interactive_tunables *tunables)
-{
-	unsigned long cur_time;
-
-	cur_time = jiffies;
-	tunables->region_time_in_state[tunables->prev_max_region] +=
-			cur_time - tunables->region_last_stat;
-	tunables->region_last_stat = cur_time;
-}
-
-static int cpufreq_interactive_regionchange_task(void *data)
+static int cpufreq_interactive_speedchange_task(void *data)
 {
 	unsigned int cpu;
 	cpumask_t tmp_mask;
@@ -665,81 +654,17 @@ static int cpufreq_interactive_regionchange_task(void *data)
 
 	while (1) {
 		set_current_state(TASK_INTERRUPTIBLE);
-		spin_lock_irqsave(&regionchange_cpumask_lock, flags);
-
-		pcpu = &per_cpu(cpuinfo, smp_processor_id());
-		cpumask_and(&policy_mask, &regionchange_cpumask, pcpu->policy->related_cpus);
-		if (cpumask_empty(&policy_mask)) {
-			spin_unlock_irqrestore(&regionchange_cpumask_lock, flags);
-
-			if (kthread_should_stop())
-				break;
-
-			schedule();
-
-			if (kthread_should_stop())
-				break;
-
-			spin_lock_irqsave(&regionchange_cpumask_lock, flags);
-		}
-
-		set_current_state(TASK_RUNNING);
-		cpumask_and(&tmp_mask, &regionchange_cpumask, pcpu->policy->related_cpus);
-		cpumask_andnot(&regionchange_cpumask, &regionchange_cpumask, pcpu->policy->related_cpus);
-		spin_unlock_irqrestore(&regionchange_cpumask_lock, flags);
-
-		for_each_cpu(cpu, &tmp_mask) {
-			unsigned int j;
-			unsigned int max_region = 0;
-			struct cpufreq_interactive_tunables *tunables;
-
-			pcpu = &per_cpu(cpuinfo, cpu);
-			tunables = pcpu->policy->governor_data;
-
-			if (!down_read_trylock(&pcpu->enable_sem))
-				continue;
-			if (!pcpu->governor_enabled) {
-				up_read(&pcpu->enable_sem);
-				continue;
-			}
-
-			tunables->prev_max_region = tunables->max_region;
-			for_each_cpu(j, pcpu->policy->cpus) {
-				struct cpufreq_interactive_cpuinfo *pjcpu =
-					&per_cpu(cpuinfo, j);
-
-				if (pjcpu->region > max_region)
-					max_region = pjcpu->region;
-			}
-
-			if (tunables->prev_max_region != max_region) {
-				tunables->max_region = max_region;
-				coremem_region_bus_lock(max_region, pcpu->policy);
-				region_update_status(tunables);
-			}
-
-			up_read(&pcpu->enable_sem);
-		}
-	}
-
-	return 0;
-}
-#endif
-
-static int cpufreq_interactive_speedchange_task(void *data)
-{
-	unsigned int cpu;
-	cpumask_t tmp_mask;
-	unsigned long flags;
-	struct cpufreq_interactive_cpuinfo *pcpu;
-
-	while (1) {
-		set_current_state(TASK_INTERRUPTIBLE);
 		spin_lock_irqsave(&speedchange_cpumask_lock, flags);
 
-		if (cpumask_empty(&speedchange_cpumask)) {
+		pcpu = &per_cpu(cpuinfo, smp_processor_id());
+		cpumask_and(&policy_mask, &speedchange_cpumask, pcpu->policy->related_cpus);
+		if (cpumask_empty(&policy_mask)) {
 			spin_unlock_irqrestore(&speedchange_cpumask_lock,
 					       flags);
+
+			if (kthread_should_stop())
+				break;
+
 			schedule();
 
 			if (kthread_should_stop())
@@ -749,18 +674,16 @@ static int cpufreq_interactive_speedchange_task(void *data)
 		}
 
 		set_current_state(TASK_RUNNING);
-		tmp_mask = speedchange_cpumask;
-		cpumask_clear(&speedchange_cpumask);
-
+		cpumask_and(&tmp_mask, &speedchange_cpumask, pcpu->policy->related_cpus);
+		cpumask_andnot(&speedchange_cpumask, &speedchange_cpumask, pcpu->policy->related_cpus);
 		spin_unlock_irqrestore(&speedchange_cpumask_lock, flags);
 
 		for_each_cpu(cpu, &tmp_mask) {
 			unsigned int j;
 			unsigned int max_freq = 0;
-			struct cpufreq_interactive_cpuinfo *pjcpu;
-			u64 hvt = ~0ULL, fvt = 0;
 
 			pcpu = &per_cpu(cpuinfo, cpu);
+
 			if (!down_read_trylock(&pcpu->enable_sem))
 				continue;
 			if (!pcpu->governor_enabled) {
@@ -769,34 +692,22 @@ static int cpufreq_interactive_speedchange_task(void *data)
 			}
 
 			for_each_cpu(j, pcpu->policy->cpus) {
-				pjcpu = &per_cpu(cpuinfo, j);
+				struct cpufreq_interactive_cpuinfo *pjcpu =
+					&per_cpu(cpuinfo, j);
 
-				fvt = max(fvt, pjcpu->loc_floor_val_time);
-				if (pjcpu->target_freq > max_freq) {
+				if (pjcpu->target_freq > max_freq)
 					max_freq = pjcpu->target_freq;
-					hvt = pjcpu->loc_hispeed_val_time;
-				} else if (pjcpu->target_freq == max_freq) {
-					hvt = min(hvt, pjcpu->loc_hispeed_val_time);
-				}
-			}
-			for_each_cpu(j, pcpu->policy->cpus) {
-				pjcpu = &per_cpu(cpuinfo, j);
-				pjcpu->pol_floor_val_time = fvt;
 			}
 
-			if (max_freq != pcpu->policy->cur) {
+			if (max_freq != pcpu->policy->cur)
 				__cpufreq_driver_target(pcpu->policy,
 							max_freq,
 							CPUFREQ_RELATION_H);
-				for_each_cpu(j, pcpu->policy->cpus) {
-					pjcpu = &per_cpu(cpuinfo, j);
-					pjcpu->pol_hispeed_val_time = hvt;
-				}
-			}
 
 #if defined(CONFIG_CPU_THERMAL_IPA)
 			ipa_cpufreq_requested(pcpu->policy, max_freq);
 #endif
+
 			trace_cpufreq_interactive_setspeed(cpu,
 						     pcpu->target_freq,
 						     pcpu->policy->cur);
@@ -843,7 +754,7 @@ static void cpufreq_interactive_boost(const struct cpufreq_policy *policy)
 
 
 	if (anyboost && tunables->speedchange_task)
-		wake_up_process(tunables->speedchange_task);
+		wake_up_process_no_notif(tunables->speedchange_task);
 }
 
 static int cpufreq_interactive_notifier(
@@ -2125,7 +2036,7 @@ static int cpufreq_governor_interactive(struct cpufreq_policy *policy,
 #endif
 
 		/* NB: wake up so the thread does not look hung to the freezer */
-		wake_up_process(tunables->speedchange_task);
+		wake_up_process_no_notif(tunables->speedchange_task);
 #ifdef CONFIG_PMU_COREMEM_RATIO
 		wake_up_process(tunables->regionchange_task);
 #endif
@@ -2259,7 +2170,7 @@ static int cpufreq_interactive_cluster1_min_qos_handler(struct notifier_block *b
 		spin_unlock_irqrestore(&speedchange_cpumask_lock, flags);
 
 		if (tunables->speedchange_task)
-			wake_up_process(tunables->speedchange_task);
+			wake_up_process_no_notif(tunables->speedchange_task);
 	}
 exit:
 	mutex_unlock(&gov_lock);
@@ -2310,7 +2221,7 @@ static int cpufreq_interactive_cluster1_max_qos_handler(struct notifier_block *b
 		spin_unlock_irqrestore(&speedchange_cpumask_lock, flags);
 
 		if (tunables->speedchange_task)
-			wake_up_process(tunables->speedchange_task);
+			wake_up_process_no_notif(tunables->speedchange_task);
 	}
 exit:
 	mutex_unlock(&gov_lock);
@@ -2357,7 +2268,7 @@ static int cpufreq_interactive_cluster0_min_qos_handler(struct notifier_block *b
 		spin_unlock_irqrestore(&speedchange_cpumask_lock, flags);
 
 		if (tunables->speedchange_task)
-			wake_up_process(tunables->speedchange_task);
+			wake_up_process_no_notif(tunables->speedchange_task);
 	}
 exit:
 	mutex_unlock(&gov_lock);
@@ -2403,7 +2314,7 @@ static int cpufreq_interactive_cluster0_max_qos_handler(struct notifier_block *b
 		spin_unlock_irqrestore(&speedchange_cpumask_lock, flags);
 
 		if (tunables->speedchange_task)
-			wake_up_process(tunables->speedchange_task);
+			wake_up_process_no_notif(tunables->speedchange_task);
 	}
 exit:
 	mutex_unlock(&gov_lock);
