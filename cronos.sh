@@ -72,15 +72,17 @@ CR_CONFIG_G928X=zenlte_defconfig
 CR_VARIANT_G928X=G928X
 CR_VARIANT_G928T=G928TW8
 # Device specific Variables [SM-G92X]
-CR_DTSFILES_G920F="exynos7420-zeroflte_eur_open_06.dtb exynos7420-zeroflte_eur_open_07.dtb"
-CR_DTSFILES_G925F="exynos7420-zerolte_eur_open_08.dtb"
-CR_VARIANT_G920F=G920F
+CR_DTSFILES_G920X="exynos7420-zeroflte_eur_open_00.dtb exynos7420-zeroflte_eur_open_01.dtb exynos7420-zeroflte_eur_open_02.dtb exynos7420-zeroflte_eur_open_03.dtb exynos7420-zeroflte_eur_open_04.dtb exynos7420-zeroflte_eur_open_05.dtb exynos7420-zeroflte_eur_open_06.dtb exynos7420-zeroflte_eur_open_07.dtb"
+CR_DTSFILES_G925X="exynos7420-zerolte_eur_open_01.dtb exynos7420-zerolte_eur_open_02.dtb exynos7420-zerolte_eur_open_03.dtb exynos7420-zerolte_eur_open_04.dtb exynos7420-zerolte_eur_open_05.dtb exynos7420-zerolte_eur_open_06.dtb exynos7420-zerolte_eur_open_07.dtb exynos7420-zerolte_eur_open_08.dtb"
+CR_DTSFILES_G920T="exynos7420-zeroflte_usa_00.dtb exynos7420-zeroflte_usa_01.dtb exynos7420-zeroflte_usa_02.dtb exynos7420-zeroflte_usa_03.dtb exynos7420-zeroflte_usa_04.dtb exynos7420-zeroflte_usa_05.dtb"
+CR_DTSFILES_G925T="exynos7420-zerolte_usa_01.dtb exynos7420-zerolte_usa_02.dtb exynos7420-zerolte_usa_03.dtb exynos7420-zerolte_usa_04.dtb exynos7420-zerolte_usa_05.dtb exynos7420-zerolte_usa_06 exynos7420-zerolte_usa_07.dtb exynos7420-zerolte_usa_08.dtb"
+CR_VARIANT_G920X=G920X
 CR_VARIANT_G920T=G920TW8
-CR_VARIANT_G925F=G925F
+CR_VARIANT_G925X=G925X
 CR_VARIANT_G925T=G925TW8
 CR_CONFIG_G92X=zerolte_defconfig
-CR_CONFIG_G920F=zerof_defconfig
-CR_CONFIG_G925F=zero_defconfig
+CR_CONFIG_G920X=zerof_defconfig
+CR_CONFIG_G925X=zero_defconfig
 # Common configs
 CR_CONFIG_AUDIENCE=audience_defconfig
 CR_CONFIG_INTL=intl_defconfig
@@ -291,7 +293,7 @@ echo "----------------------------------------------"
 echo "$CR_NAME $CR_VERSION Build Script"
 echo "----------------------------------------------"
 PS3='Please select your option (1-7): '
-menuvar=("SM-N920X" "SM-N920P" "SM-G920F" "SM-G925F" "SM-G928X" "ALL" "Exit")
+menuvar=("SM-N920X" "SM-N920P" "SM-G920X" "SM-G925X" "SM-G928X" "ALL" "Exit")
 select menuvar in "${menuvar[@]}"
 do
     case $menuvar in
@@ -351,21 +353,22 @@ do
             read -n1 -r key
             break
             ;;
-        "SM-G920F")
+        "SM-G920X")
             clear
-            echo "Starting $CR_VARIANT_G920F kernel build..."
+            echo "Starting $CR_VARIANT_G920X kernel build..."
             CR_CONFIG=$CR_CONFIG_G92X
-            CR_CONFIG_SPLIT=$CR_CONFIG_G920F
-            CR_DTSFILES=$CR_DTSFILES_G920F
+            CR_CONFIG_SPLIT=$CR_CONFIG_G920X
             CR_VIDEO="zero"
             if [ $CR_AUDIO = "2" ]; then
               echo " Building US variant "
               CR_CONFIG_AUDIO=$CR_CONFIG_AUDIENCE
               CR_VARIANT=$CR_VARIANT_G920T
+              CR_DTSFILES=$CR_DTSFILES_G920T
             else
               echo " Building intl variant "
               CR_CONFIG_AUDIO=$CR_CONFIG_INTL
-              CR_VARIANT=$CR_VARIANT_G920F
+              CR_VARIANT=$CR_VARIANT_G920X
+              CR_DTSFILES=$CR_DTSFILES_G920X
             fi
             if [ $CR_MODE = "1" ]; then
               echo " Building Oneui variant "
@@ -388,21 +391,22 @@ do
             read -n1 -r key
             break
             ;;
-        "SM-G925F")
+        "SM-G925X")
             clear
-            echo "Starting $CR_VARIANT_G925F kernel build..."
+            echo "Starting $CR_VARIANT_G925X kernel build..."
             CR_CONFIG=$CR_CONFIG_G92X
-            CR_CONFIG_SPLIT=$CR_CONFIG_G925F
-            CR_DTSFILES=$CR_DTSFILES_G925F
+            CR_CONFIG_SPLIT=$CR_CONFIG_G925X
             CR_VIDEO="zero"
             if [ $CR_AUDIO = "2" ]; then
               echo " Building US variant "
               CR_CONFIG_AUDIO=$CR_CONFIG_AUDIENCE
               CR_VARIANT=$CR_VARIANT_G925T
+              CR_DTSFILES=$CR_DTSFILES_G925T
             else
               echo " Building intl variant "
               CR_CONFIG_AUDIO=$CR_CONFIG_INTL
-              CR_VARIANT=$CR_VARIANT_G925F
+              CR_VARIANT=$CR_VARIANT_G925X
+              CR_DTSFILES=$CR_DTSFILES_G925X
             fi
             if [ $CR_MODE = "1" ]; then
               echo " Building Oneui variant "
@@ -527,10 +531,10 @@ do
             BUILD_DTB
             PACK_BOOT_IMG
             BUILD_OUT
-            echo "Starting $CR_VARIANT_G920F kernel build..."
+            echo "Starting $CR_VARIANT_G920X kernel build..."
             CR_CONFIG=$CR_CONFIG_G92X
-            CR_CONFIG_SPLIT=$CR_CONFIG_G920F
-            CR_DTSFILES=$CR_DTSFILES_G920F
+            CR_CONFIG_SPLIT=$CR_CONFIG_G920X
+            CR_DTSFILES=$CR_DTSFILES_G920X
             CR_VIDEO="zero"
             if [ $CR_AUDIO = "2" ]; then
               echo " Building US variant "
@@ -539,7 +543,7 @@ do
             else
               echo " Building intl variant "
               CR_CONFIG_AUDIO=$CR_CONFIG_INTL
-              CR_VARIANT=$CR_VARIANT_G920F
+              CR_VARIANT=$CR_VARIANT_G920X
             fi
             if [ $CR_MODE = "1" ]; then
               echo " Building Oneui variant "
@@ -559,10 +563,10 @@ do
             BUILD_DTB
             PACK_BOOT_IMG
             BUILD_OUT
-            echo "Starting $CR_VARIANT_G925F kernel build..."
+            echo "Starting $CR_VARIANT_G925X kernel build..."
             CR_CONFIG=$CR_CONFIG_G92X
-            CR_CONFIG_SPLIT=$CR_CONFIG_G925F
-            CR_DTSFILES=$CR_DTSFILES_G925F
+            CR_CONFIG_SPLIT=$CR_CONFIG_G925X
+            CR_DTSFILES=$CR_DTSFILES_G925X
             CR_VIDEO="zero"
             if [ $CR_AUDIO = "2" ]; then
               echo " Building US variant "
@@ -571,7 +575,7 @@ do
             else
               echo " Building intl variant "
               CR_CONFIG_AUDIO=$CR_CONFIG_INTL
-              CR_VARIANT=$CR_VARIANT_G925F
+              CR_VARIANT=$CR_VARIANT_G925X
             fi
             if [ $CR_MODE = "1" ]; then
               echo " Building Oneui variant "
