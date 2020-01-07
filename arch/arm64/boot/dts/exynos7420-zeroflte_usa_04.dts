@@ -11,7 +11,7 @@
 
 /dts-v1/;
 #include "exynos7420-zero_common.dtsi"
-#include "exynos7420-zeroflte_usa_battery_05.dtsi"
+#include "exynos7420-zeroflte_eur_battery_09.dtsi"
 #include "exynos7420-zeroflte_gpio_usa_04.dtsi"
 #include "exynos7420-zerolte_modem-shannon.dtsi"
 #include "exynos7420-zerolte_fingerprint-sensor_00.dtsi"
