@@ -24,6 +24,8 @@ CR_TC=~/Android/Toolchains/linaro-4.9.4-aarch64-linux/bin/aarch64-linux-gnu-
 CR_DTS=arch/arm64/boot/dts
 CR_DTS_TREBLE=arch/arm64/boot/exynos7420_Treble.dtsi
 CR_DTS_ONEUI=arch/arm64/boot/exynos7420_Oneui.dtsi
+CR_DTS_S6_2600=arch/arm64/boot/zeroflte_2600.dtsi
+CR_DTS_S6_3600=arch/arm64/boot/zeroflte_3600.dtsi
 CR_DECON=$CR_DIR/drivers/video/exynos
 # Define boot.img out dir
 CR_OUT=$CR_DIR/Cronos/out
@@ -88,6 +90,7 @@ CR_CONFIG_AUDIENCE=audience_defconfig
 CR_CONFIG_INTL=intl_defconfig
 CR_CONFIG_SPLIT=NULL
 CR_CONFIG_HELIOS=helios_defconfig
+CR_S6MOD="0"
 #####################################################
 
 # Script functions
@@ -136,6 +139,7 @@ if [ $CR_CLEAN = 1 ]; then
      rm -rf $CR_DTS/exynos7420.dtsi
      rm -rf $CR_OUT/*.img
      rm -rf $CR_OUT/*.zip
+     rm -rf $CR_DTS/exynos7420-zeroflte_eur_battery_09.dtsi
 fi
 if [ $CR_CLEAN = 0 ]; then
      echo " "
@@ -146,6 +150,7 @@ if [ $CR_CLEAN = 0 ]; then
      rm -rf $CR_DTS/*.dtb
      rm -rf $CR_DIR/.config
      rm -rf $CR_DTS/exynos7420.dtsi
+     rm -rf $CR_DTS/exynos7420-zeroflte_eur_battery_09.dtsi
 fi
 }
 
@@ -222,6 +227,14 @@ BUILD_ZIMAGE()
 	echo " "
 	echo "Building zImage for $CR_VARIANT"
 	export LOCALVERSION=-$CR_IMAGE_NAME
+    if [ $CR_S6MOD = "1" ]; then
+    echo " Copy Modded S6 Battery DTSI"
+  	cp $CR_DTS_S6_3600 $CR_DTS/exynos7420-zeroflte_eur_battery_09.dtsi
+    fi
+    if [ $CR_S6MOD = "0" ]; then
+    echo " Copy Stock S6 Battery DTSI"
+  	cp $CR_DTS_S6_2600 $CR_DTS/exynos7420-zeroflte_eur_battery_09.dtsi
+    fi
   	cp $CR_DTB_MOUNT $CR_DTS/exynos7420.dtsi
 	echo "Make $CR_CONFIG"
 	make $CR_CONFIG
@@ -255,6 +268,7 @@ BUILD_DTB()
 	rm -rf $CR_DTS/.*.cmd
 	rm -rf $CR_DTS/*.dtb
 	rm -rf $CR_DTS/exynos7420.dtsi
+    rm -rf $CR_DTS/exynos7420-zeroflte_eur_battery_09.dtsi
 	du -k "$CR_DTB" | cut -f1 >sizdT
 	sizdT=$(head -n 1 sizdT)
 	rm -rf sizdT
@@ -380,6 +394,16 @@ do
               CR_VARIANT=$CR_VARIANT-Q
               CR_DTB_MOUNT=$CR_DTS_TREBLE
               CR_RAMDISK=$CR_RAMDISK_Q
+            fi
+            read -p "Extended Battery? (y/n) > " yn
+            if [ "$yn" = "Y" -o "$yn" = "y" ]; then
+                 echo "Including S7E Battery modded DTSI"
+                 CR_S6MOD="1"
+                 CR_VARIANT=$CR_VARIANT-3600mAh
+            fi
+            if [ "$yn" = "N" -o "$yn" = "n" ]; then
+                 echo "Including Stock Battery DTSI"
+                 CR_S6MOD="0"
             fi
             BUILD_HACKS
             BUILD_IMAGE_NAME
