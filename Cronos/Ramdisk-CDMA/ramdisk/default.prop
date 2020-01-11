@@ -49,7 +49,7 @@ setupwizard.feature.predeferred_enabled=false
 setupwizard.theme=glif_v3_light
 ro.setupwizard.wifi_on_exit=false
 ro.setupwizard.mode=OPTIONAL
-ro.com.google.gmsversion=9_201902
+ro.com.google.gmsversion=9_201907
 ro.vndk.version=28
 ro.vndk.lite=true
 persist.sys.usb.config=adb,mtp
@@ -60,20 +60,15 @@ log.tag.stats_log=I
 #
 # BOOTIMAGE_BUILD_PROPERTIES
 #
-ro.bootimage.build.date=Thu Jun 13 08:40:26 KST 2019
-ro.bootimage.build.date.utc=1560382826
-ro.bootimage.build.fingerprint=samsung/gracerltexx/gracerlte:9/PPR1.180610.011/N935FXXS5CSF1:user/test-keys
+ro.bootimage.build.date=Tue Nov 26 13:29:36 KST 2019
+ro.bootimage.build.date.utc=1574742576
+ro.bootimage.build.fingerprint=samsung/gracerltexx/gracerlte:9/PPR1.180610.011/N935FXXU6CSK1:user/test-keys
 # Cronos Tweaks
 wlan.wfd.hdcp=disable
 ro.config.tima=0
-ro.security.vaultkeeper.feature=0
 ro.frp.pst=
-ro.securestorage.support=false
 ro.config.dmverity=false
 ro.config.rkp=false
 security.knox_kap_mode=false
 ro.config.kap_default_on=false
 ro.config.kap=false
-ro.config.tima=0
-ro.securestorage.support=false
-wlan.wfd.hdcp=disable
