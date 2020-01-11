@@ -34,6 +34,7 @@ CR_PRODUCT=$CR_DIR/Cronos/Product
 CR_AIK=$CR_DIR/Cronos/A.I.K
 # Main Ramdisk Location
 CR_RAMDISK=$CR_DIR/Cronos/Ramdisk
+CR_RAMDISK_CDMA=$CR_DIR/Cronos/Ramdisk-CDMA
 CR_RAMDISK_Q=$CR_DIR/Cronos/Q
 # Compiled image name and location (Image/zImage)
 CR_KERNEL=$CR_DIR/arch/arm64/boot/Image
@@ -66,7 +67,6 @@ CR_CONFIG_N920P=nobleltespr_defconfig
 CR_VARIANT_N920C=N920X
 CR_VARIANT_N920T=N920TW8
 CR_VARIANT_N920P=N920P
-CR_RAMDISK_N920P=$CR_DIR/Cronos/Ramdisk-CDMA
 # Device specific Variables [SM-G928X]
 CR_DTSFILES_G928X="exynos7420-zenlte_eur_open_00.dtb exynos7420-zenlte_eur_open_09.dtb"
 CR_DTSFILES_G928T="exynos7420-zenlte_usa_00.dtb exynos7420-zenlte_usa_09.dtb"
@@ -90,7 +90,9 @@ CR_CONFIG_AUDIENCE=audience_defconfig
 CR_CONFIG_INTL=intl_defconfig
 CR_CONFIG_SPLIT=NULL
 CR_CONFIG_HELIOS=helios_defconfig
+CR_CONFIG_CDMA=cdma_defconfig
 CR_S6MOD="0"
+CR_AUDIO=NULL
 #####################################################
 
 # Script functions
@@ -180,7 +182,7 @@ BUILD_GENERATE_CONFIG()
     echo " Copy $CR_CONFIG_SPLIT "
     cat $CR_DIR/arch/$CR_ARCH/configs/$CR_CONFIG_SPLIT >> $CR_DIR/arch/$CR_ARCH/configs/tmp_defconfig
   fi
-  if [ $CR_MODE != "NULL" ]; then
+  if [ $CR_AUDIO != "NULL" ]; then
     echo " Copy $CR_CONFIG_AUDIO "
     cat $CR_DIR/arch/$CR_ARCH/configs/$CR_CONFIG_AUDIO >> $CR_DIR/arch/$CR_ARCH/configs/tmp_defconfig
   fi
@@ -351,12 +353,23 @@ do
         "SM-N920P")
             clear
             echo "Starting $CR_VARIANT_N920P kernel build..."
-            CR_CONFIG=$CR_CONFIG_N920P
+            CR_CONFIG=$CR_CONFIG_N920C
+            CR_CONFIG_SPLIT=$CR_CONFIG_CDMA
+            CR_VIDEO="noble"
             CR_VARIANT=$CR_VARIANT_N920P
             CR_DTSFILES=$CR_DTSFILES_N920P
-            CR_RAMDISK=$CR_RAMDISK_N920P
-            CR_AUDIO=NULL
-            CR_VIDEO="noble"
+            CR_RAMDISK=$CR_RAMDISK_CDMA
+            if [ $CR_MODE = "1" ]; then
+              echo " Building Oneui variant "
+              CR_VARIANT=$CR_VARIANT-OneUI
+              CR_DTB_MOUNT=$CR_DTS_ONEUI
+            fi
+            if [ $CR_MODE = "2" ]; then
+              echo " Building Oneui-Q variant "
+              CR_VARIANT=$CR_VARIANT-Q
+              CR_DTB_MOUNT=$CR_DTS_TREBLE
+              CR_RAMDISK=$CR_RAMDISK_Q
+            fi
             BUILD_HACKS
             BUILD_IMAGE_NAME
             BUILD_GENERATE_CONFIG
