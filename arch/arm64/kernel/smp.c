@@ -168,6 +168,11 @@ asmlinkage void __cpuinit secondary_start_kernel(void)
 	smp_store_cpu_info(cpu);
 
 	/*
+	 * Log the CPU info before it is marked online and might get read.
+	 */
+	cpuinfo_store_cpu();
+
+	/*
 	 * OK, now it's safe to let the boot CPU continue.  Wait for
 	 * the CPU migration code to notice that the CPU is online
 	 * before we continue.
@@ -681,8 +686,13 @@ void smp_send_stop(void)
 		smp_cross_call(&mask, IPI_CPU_STOP);
 	}
 
+#ifdef CONFIG_SOC_EXYNOS7420
+	/* Wait up to 5 seconds for other CPUs to stop */
+	timeout = USEC_PER_SEC * 5;
+#else
 	/* Wait up to 3 seconds for other CPUs to stop */
 	timeout = USEC_PER_SEC * 3;
+#endif
 	while (num_online_cpus() > 1 && timeout--)
 		udelay(1);
 
