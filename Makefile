@@ -384,6 +384,7 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-strict-aliasing -fno-common \
 		   -Wno-implicit-function-declaration \
 		   -Wno-format-security \
+           -Wno-maybe-uninitialized \
 		   -fno-delete-null-pointer-checks \
 		   -fdiagnostics-show-option
 KBUILD_AFLAGS_KERNEL :=
