@@ -335,9 +335,6 @@ on boot
     # write /proc/sys/vm/min_free_kbytes 32768
     # write /proc/sys/vm/min_free_order_shift 1
 
-# SSWAP
-    write /proc/sys/vm/swappiness 180
-
     # IPSec for VOLTE
     chown root system /dev/socket
     chmod 0775 /dev/socket
@@ -682,7 +679,7 @@ on boot
     chmod 6755 /system/bin/dmm_v2
 
 # SSWAP
-    write /proc/sys/vm/swappiness 200
+    write /proc/sys/vm/swappiness 100
 
 #MST HW Support
     setprop ro.mst.support 1
