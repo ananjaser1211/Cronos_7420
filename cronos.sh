@@ -22,8 +22,6 @@ CR_DIR=$(pwd)
 CR_TC=~/Android/Toolchains/linaro-7.5.0-aarch64-linux/bin/aarch64-linux-gnu-
 # Define proper arch and dir for dts files
 CR_DTS=arch/arm64/boot/dts
-CR_DTS_TREBLE=arch/arm64/boot/exynos7420_Treble.dtsi
-CR_DTS_ONEUI=arch/arm64/boot/exynos7420_Oneui.dtsi
 CR_DTS_S6_2600=arch/arm64/boot/zeroflte_2600.dtsi
 CR_DTS_S6_3600=arch/arm64/boot/zeroflte_3600.dtsi
 CR_DECON=$CR_DIR/drivers/video/exynos
@@ -138,7 +136,6 @@ if [ $CR_CLEAN = 1 ]; then
      rm -rf $CR_DTS/.*.cmd
      rm -rf $CR_DTS/*.dtb
      rm -rf $CR_DIR/.config
-     rm -rf $CR_DTS/exynos7420.dtsi
      rm -rf $CR_OUT/*.img
      rm -rf $CR_OUT/*.zip
      rm -rf $CR_DTS/exynos7420-zeroflte_eur_battery_09.dtsi
@@ -151,7 +148,6 @@ if [ $CR_CLEAN = 0 ]; then
      rm -rf $CR_DTS/.*.cmd
      rm -rf $CR_DTS/*.dtb
      rm -rf $CR_DIR/.config
-     rm -rf $CR_DTS/exynos7420.dtsi
      rm -rf $CR_DTS/exynos7420-zeroflte_eur_battery_09.dtsi
 fi
 }
@@ -237,7 +233,6 @@ BUILD_ZIMAGE()
     echo " Copy Stock S6 Battery DTSI"
   	cp $CR_DTS_S6_2600 $CR_DTS/exynos7420-zeroflte_eur_battery_09.dtsi
     fi
-  	cp $CR_DTB_MOUNT $CR_DTS/exynos7420.dtsi
 	echo "Make $CR_CONFIG"
 	make $CR_CONFIG
 	make -j$CR_JOBS
@@ -332,12 +327,10 @@ do
             if [ $CR_MODE = "1" ]; then
               echo " Building Oneui variant "
               CR_VARIANT=$CR_VARIANT-OneUI
-              CR_DTB_MOUNT=$CR_DTS_ONEUI
             fi
             if [ $CR_MODE = "2" ]; then
               echo " Building Oneui-Q variant "
               CR_VARIANT=$CR_VARIANT-Q
-              CR_DTB_MOUNT=$CR_DTS_TREBLE
               CR_RAMDISK=$CR_RAMDISK_Q
             fi
             BUILD_HACKS
@@ -362,12 +355,10 @@ do
             if [ $CR_MODE = "1" ]; then
               echo " Building Oneui variant "
               CR_VARIANT=$CR_VARIANT-OneUI
-              CR_DTB_MOUNT=$CR_DTS_ONEUI
             fi
             if [ $CR_MODE = "2" ]; then
               echo " Building Oneui-Q variant "
               CR_VARIANT=$CR_VARIANT-Q
-              CR_DTB_MOUNT=$CR_DTS_TREBLE
               CR_RAMDISK=$CR_RAMDISK_Q
             fi
             BUILD_HACKS
@@ -400,12 +391,10 @@ do
             if [ $CR_MODE = "1" ]; then
               echo " Building Oneui variant "
               CR_VARIANT=$CR_VARIANT-OneUI
-              CR_DTB_MOUNT=$CR_DTS_ONEUI
             fi
             if [ $CR_MODE = "2" ]; then
               echo " Building Oneui-Q variant "
               CR_VARIANT=$CR_VARIANT-Q
-              CR_DTB_MOUNT=$CR_DTS_TREBLE
               CR_RAMDISK=$CR_RAMDISK_Q
             fi
             read -p "Extended Battery? (y/n) > " yn
@@ -448,12 +437,10 @@ do
             if [ $CR_MODE = "1" ]; then
               echo " Building Oneui variant "
               CR_VARIANT=$CR_VARIANT-OneUI
-              CR_DTB_MOUNT=$CR_DTS_ONEUI
             fi
             if [ $CR_MODE = "2" ]; then
               echo " Building Oneui-Q variant "
               CR_VARIANT=$CR_VARIANT-Q
-              CR_DTB_MOUNT=$CR_DTS_TREBLE
               CR_RAMDISK=$CR_RAMDISK_Q
             fi
             BUILD_HACKS
@@ -485,12 +472,10 @@ do
             if [ $CR_MODE = "1" ]; then
               echo " Building Oneui variant "
               CR_VARIANT=$CR_VARIANT-OneUI
-              CR_DTB_MOUNT=$CR_DTS_ONEUI
             fi
             if [ $CR_MODE = "2" ]; then
               echo " Building Oneui-Q variant "
               CR_VARIANT=$CR_VARIANT-Q
-              CR_DTB_MOUNT=$CR_DTS_TREBLE
               CR_RAMDISK=$CR_RAMDISK_Q
             fi
             BUILD_HACKS
@@ -521,12 +506,10 @@ do
             if [ $CR_MODE = "1" ]; then
               echo " Building Oneui variant "
               CR_VARIANT=$CR_VARIANT-OneUI
-              CR_DTB_MOUNT=$CR_DTS_ONEUI
             fi
             if [ $CR_MODE = "2" ]; then
               echo " Building Oneui-Q variant "
               CR_VARIANT=$CR_VARIANT-Q
-              CR_DTB_MOUNT=$CR_DTS_TREBLE
               CR_RAMDISK=$CR_RAMDISK_Q
             fi
             BUILD_HACKS
@@ -553,12 +536,10 @@ do
             if [ $CR_MODE = "1" ]; then
               echo " Building Oneui variant "
               CR_VARIANT=$CR_VARIANT-OneUI
-              CR_DTB_MOUNT=$CR_DTS_ONEUI
             fi
             if [ $CR_MODE = "2" ]; then
               echo " Building Oneui-Q variant "
               CR_VARIANT=$CR_VARIANT-Q
-              CR_DTB_MOUNT=$CR_DTS_TREBLE
               CR_RAMDISK=$CR_RAMDISK_Q
             fi
             BUILD_HACKS
@@ -585,12 +566,10 @@ do
             if [ $CR_MODE = "1" ]; then
               echo " Building Oneui variant "
               CR_VARIANT=$CR_VARIANT-OneUI
-              CR_DTB_MOUNT=$CR_DTS_ONEUI
             fi
             if [ $CR_MODE = "2" ]; then
               echo " Building Oneui-Q variant "
               CR_VARIANT=$CR_VARIANT-Q
-              CR_DTB_MOUNT=$CR_DTS_TREBLE
               CR_RAMDISK=$CR_RAMDISK_Q
             fi
             BUILD_HACKS
@@ -617,12 +596,10 @@ do
             if [ $CR_MODE = "1" ]; then
               echo " Building Oneui variant "
               CR_VARIANT=$CR_VARIANT-OneUI
-              CR_DTB_MOUNT=$CR_DTS_ONEUI
             fi
             if [ $CR_MODE = "2" ]; then
               echo " Building Oneui-Q variant "
               CR_VARIANT=$CR_VARIANT-Q
-              CR_DTB_MOUNT=$CR_DTS_TREBLE
               CR_RAMDISK=$CR_RAMDISK_Q
             fi
             BUILD_HACKS

@@ -80,6 +80,5 @@ Cronos/Flashable/Helios/device
 drivers/gator/gator_src_md5.h
 arch/arm64/configs/tmp_defconfig
 tmp_defconfig
-arch/arm64/boot/dts/exynos7420.dtsi
 arch/arm64/boot/exynos7420-zeroflte_eur_battery_09.dtsi
 drivers/video/exynos/*
