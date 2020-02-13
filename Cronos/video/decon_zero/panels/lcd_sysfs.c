@@ -14,9 +14,15 @@
 
 #include "../dsim.h"
 #include "dsim_panel.h"
-#include "panel_info.h"
+//#include "panel_info.h"
+#include "s6e3hf2_wqhd_param.h"
+#ifdef CONFIG_PANEL_AID_DIMMING
+#include "aid_dimming.h"
+#endif
+
 #include "dsim_backlight.h"
 #include "../decon.h"
+#include <linux/variant_detection.h>
 
 #ifdef CONFIG_FB_DSU
 #include <linux/sec_debug.h>
@@ -32,12 +38,15 @@ enum weakness_hbm_state {
 };
 #define W_HBM_STEP	(5)
 
+
 #if defined(CONFIG_SEC_FACTORY) && defined(CONFIG_EXYNOS_DECON_LCD_MCD)
 #ifdef CONFIG_PANEL_S6E3HF3_DYNAMIC			// only edge panel
 
 void mcd_mode_set(struct dsim_device *dsim)
 {
 	struct panel_private *panel = &dsim->priv;
+	if (variant_edge == NOT_EDGE)
+		return 0;
 	dsim_write_hl_data(dsim, SEQ_TEST_KEY_ON_F0, ARRAY_SIZE(SEQ_TEST_KEY_ON_F0));
 	if(panel->mcd_on == 0)		// mcd_off
 	{
@@ -63,6 +72,8 @@ void mcd_mode_set(struct dsim_device *dsim)
 {
 	int i = 0;
 	struct panel_private *panel = &dsim->priv;
+	if (variant_edge == NOT_EDGE)
+		return 0;
 	dsim_write_hl_data(dsim, SEQ_TEST_KEY_ON_F0, ARRAY_SIZE(SEQ_TEST_KEY_ON_F0));
 	dsim_write_hl_data(dsim, SEQ_TEST_KEY_ON_F1, ARRAY_SIZE(SEQ_TEST_KEY_ON_F1));
 	dsim_write_hl_data(dsim, SEQ_TEST_KEY_ON_FC, ARRAY_SIZE(SEQ_TEST_KEY_ON_FC));
@@ -93,6 +104,8 @@ static ssize_t mcd_mode_show(struct device *dev,
 	struct device_attribute *attr, char *buf)
 {
 	struct panel_private *priv = dev_get_drvdata(dev);
+	if (variant_edge == NOT_EDGE)
+		return strlen(buf);
 
 	sprintf(buf, "%u\n", priv->mcd_on);
 
@@ -106,6 +119,8 @@ static ssize_t mcd_mode_store(struct device *dev,
 	struct panel_private *priv = dev_get_drvdata(dev);
 	int value;
 	int rc;
+	if (variant_edge == NOT_EDGE)
+		return size;
 
 	dsim = container_of(priv, struct dsim_device, priv);
 
@@ -404,6 +419,8 @@ static ssize_t alpm_show(struct device *dev,
 	struct device_attribute *attr, char *buf)
 {
 	struct panel_private *priv = dev_get_drvdata(dev);
+	if (variant_edge == NOT_EDGE)
+		return strlen(buf);
 
 	sprintf(buf, "%d\n", priv->alpm);
 
@@ -422,6 +439,8 @@ static ssize_t alpm_store(struct device *dev,
 	struct dsim_device *dsim;
 	struct panel_private *priv = dev_get_drvdata(dev);
 	int value;
+	if (variant_edge == NOT_EDGE)
+		return size;
 
 	dsim = container_of(priv, struct dsim_device, priv);
 
@@ -1243,7 +1262,8 @@ static struct attribute *lcd_sysfs_attributes[] = {
 #endif
 	&dev_attr_read_mtp.attr,
 #if defined(CONFIG_SEC_FACTORY) && defined(CONFIG_EXYNOS_DECON_LCD_MCD)
-	&dev_attr_mcd_mode.attr,
+	if (variant_edge == IS_EDGE)
+		&dev_attr_mcd_mode.attr,
 #endif
 #ifdef CONFIG_LCD_HMT
 #ifdef CONFIG_PANEL_AID_DIMMING
@@ -1252,7 +1272,7 @@ static struct attribute *lcd_sysfs_attributes[] = {
 	&dev_attr_hmt_on.attr,
 #endif
 #if defined(CONFIG_LCD_ALPM) || defined(CONFIG_LCD_DOZE_MODE)
-	&dev_attr_alpm.attr,
+		&dev_attr_alpm.attr,
 #endif
 	&dev_attr_adaptive_control.attr,
 	&dev_attr_lux.attr,
