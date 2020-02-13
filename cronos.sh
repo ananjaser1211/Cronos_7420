@@ -32,7 +32,6 @@ CR_PRODUCT=$CR_DIR/Cronos/Product
 CR_AIK=$CR_DIR/Cronos/A.I.K
 # Main Ramdisk Location
 CR_RAMDISK=$CR_DIR/Cronos/Ramdisk
-CR_RAMDISK_CDMA=$CR_DIR/Cronos/Ramdisk-CDMA
 CR_RAMDISK_Q=$CR_DIR/Cronos/Q
 # Compiled image name and location (Image/zImage)
 CR_KERNEL=$CR_DIR/arch/arm64/boot/Image
@@ -59,12 +58,9 @@ export $CR_ARCH
 # Device specific Variables [SM-N920X]
 CR_DTSFILES_N920C="exynos7420-noblelte_eur_open_00.dtb exynos7420-noblelte_eur_open_09.dtb"
 CR_DTSFILES_N920T="exynos7420-noblelte_usa_00.dtb exynos7420-noblelte_usa_09.dtb"
-CR_DTSFILES_N920P="exynos7420-noblelte_usa_cdma_00.dtb exynos7420-noblelte_usa_cdma_09.dtb"
 CR_CONFIG_N920C=noblelte_defconfig
-CR_CONFIG_N920P=nobleltespr_defconfig
 CR_VARIANT_N920C=N920X
 CR_VARIANT_N920T=N920TW8
-CR_VARIANT_N920P=N920P
 # Device specific Variables [SM-G928X]
 CR_DTSFILES_G928X="exynos7420-zenlte_eur_open_00.dtb exynos7420-zenlte_eur_open_09.dtb"
 CR_DTSFILES_G928T="exynos7420-zenlte_usa_00.dtb exynos7420-zenlte_usa_09.dtb"
@@ -91,7 +87,6 @@ CR_CONFIG_AUDIENCE=audience_defconfig
 CR_CONFIG_INTL=intl_defconfig
 CR_CONFIG_SPLIT=NULL
 CR_CONFIG_HELIOS=helios_defconfig
-CR_CONFIG_CDMA=cdma_defconfig
 CR_S6MOD="0"
 CR_AUDIO=NULL
 #####################################################
@@ -305,8 +300,8 @@ clear
 echo "----------------------------------------------"
 echo "$CR_NAME $CR_VERSION Build Script"
 echo "----------------------------------------------"
-PS3='Please select your option (1-6): '
-menuvar=("SM-N920X" "SM-N920P" "SM-G92X" "SM-G928X" "ALL" "Exit")
+PS3='Please select your option (1-5): '
+menuvar=("SM-N920X" "SM-G92X" "SM-G928X" "ALL" "Exit")
 select menuvar in "${menuvar[@]}"
 do
     case $menuvar in
@@ -326,34 +321,6 @@ do
               CR_VARIANT=$CR_VARIANT_N920C
               CR_DTSFILES=$CR_DTSFILES_N920C
             fi
-            if [ $CR_MODE = "1" ]; then
-              echo " Building Oneui variant "
-              CR_VARIANT=$CR_VARIANT-OneUI
-            fi
-            if [ $CR_MODE = "2" ]; then
-              echo " Building Oneui-Q variant "
-              CR_VARIANT=$CR_VARIANT-Q
-              CR_RAMDISK=$CR_RAMDISK_Q
-            fi
-            BUILD_HACKS
-            BUILD_IMAGE_NAME
-            BUILD_GENERATE_CONFIG
-            BUILD_ZIMAGE
-            BUILD_DTB
-            PACK_BOOT_IMG
-            BUILD_OUT
-            read -n1 -r key
-            break
-            ;;
-        "SM-N920P")
-            clear
-            echo "Starting $CR_VARIANT_N920P kernel build..."
-            CR_CONFIG=$CR_CONFIG_N920C
-            CR_CONFIG_SPLIT=$CR_CONFIG_CDMA
-            CR_VIDEO="noble"
-            CR_VARIANT=$CR_VARIANT_N920P
-            CR_DTSFILES=$CR_DTSFILES_N920P
-            CR_RAMDISK=$CR_RAMDISK_CDMA
             if [ $CR_MODE = "1" ]; then
               echo " Building Oneui variant "
               CR_VARIANT=$CR_VARIANT-OneUI
