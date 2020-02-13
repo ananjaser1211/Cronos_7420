@@ -53,8 +53,9 @@
 #include <linux/regulator/consumer.h>
 #include <linux/of_gpio.h>
 #include <linux/sec_sysfs.h>
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 #include <linux/variant_detection.h>
-
+#endif
 #ifdef CONFIG_TRUSTONIC_TRUSTED_UI
 #include <linux/trustedui.h>
 #endif
@@ -1723,6 +1724,8 @@ static int fts_parse_dt(struct i2c_client *client)
 	 * do not return error value even if fail to get the value
 	 */
 
+
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 	if (variant_edge == NOT_EDGE) {
 		/* read Flat model device tree entries */		
 		of_property_read_string(np, "stm,firmware_name", &pdata->firmware_name);
@@ -1737,6 +1740,14 @@ static int fts_parse_dt(struct i2c_client *client)
 		if (of_property_read_string_index(np, "stm,project_name_E", 1, &pdata->model_name))
 			tsp_debug_dbg(true, dev, "skipped to get model_name property\n");
 	}
+#else
+	of_property_read_string(np, "stm,firmware_name", &pdata->firmware_name);
+
+	if (of_property_read_string_index(np, "stm,project_name", 0, &pdata->project_name))
+		tsp_debug_dbg(true, dev, "skipped to get project_name property\n");
+	if (of_property_read_string_index(np, "stm,project_name", 1, &pdata->model_name))
+		tsp_debug_dbg(true, dev, "skipped to get model_name property\n");
+#endif
 
 	pdata->max_width = 28;
 	pdata->support_hover = true;
@@ -1744,7 +1755,7 @@ static int fts_parse_dt(struct i2c_client *client)
 #ifdef FTS_SUPPORT_TA_MODE
 	pdata->register_cb = fts_tsp_register_callback;
 #endif
-
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 #ifdef FTS_SUPPORT_TOUCH_KEY
 	if (variant_edge == IS_EDGE) {
 		if (of_property_read_u32(np, "stm,num_touchkey", &pdata->num_touchkey))
@@ -1770,6 +1781,24 @@ static int fts_parse_dt(struct i2c_client *client)
 
 		pdata->led_power = fts_led_power_ctrl;
 	}
+#endif
+#else
+#ifdef FTS_SUPPORT_TOUCH_KEY
+	if (of_property_read_u32(np, "stm,num_touchkey", &pdata->num_touchkey))
+		tsp_debug_dbg(true, dev, "skipped to get num_touchkey property\n");
+	else {
+#ifdef FTS_SUPPORT_SIDE_GESTURE
+		pdata->support_sidegesture = true;
+#endif
+		pdata->support_mskey = true;
+		pdata->touchkey = fts_touchkeys;
+
+		if (of_property_read_string(np, "stm,regulator_tk_led", &pdata->regulator_tk_led))
+			tsp_debug_dbg(true, dev, "skipped to get regulator_tk_led name property\n");
+		else
+			pdata->led_power = fts_led_power_ctrl;
+	}
+#endif
 #endif
 
 	pdata->panel_revision = (lcdtype & 0xF000) >> 12;

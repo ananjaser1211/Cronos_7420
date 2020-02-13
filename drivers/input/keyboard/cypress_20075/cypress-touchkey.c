@@ -25,8 +25,9 @@
 #include <linux/gpio.h>
 #include <linux/miscdevice.h>
 #include <linux/uaccess.h>
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 #include <linux/variant_detection.h>
-
+#endif
 #ifndef USE_OPEN_CLOSE
 #define USE_OPEN_CLOSE
 #undef CONFIG_HAS_EARLYSUSPEND
@@ -2732,9 +2733,11 @@ static int __init touchkey_init(void)
 #ifdef TEST_JIG_MODE
 	int ret;
 #endif
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 	if (variant_edge == IS_EDGE) {
 		return;
 	}
+#endif
 	i2c_add_driver(&touchkey_i2c_driver);
 
 #ifdef TEST_JIG_MODE
@@ -2747,9 +2750,11 @@ static int __init touchkey_init(void)
 
 static void __exit touchkey_exit(void)
 {
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 	if (variant_edge == IS_EDGE) {
 		return;
 	}
+#endif
 	i2c_del_driver(&touchkey_i2c_driver);
 	touchkey_probe = false;
 }

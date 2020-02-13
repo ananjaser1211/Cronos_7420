@@ -18,8 +18,9 @@
 #endif
 #include <linux/sec_debug.h>
 #include <linux/sec_batt.h>
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 #include <linux/variant_detection.h>
-
+#endif
 #define DEBUG
 
 #ifdef CONFIG_HAS_EARLYSUSPEND
@@ -246,7 +247,7 @@ static int ssp_parse_dt(struct device *dev,struct  ssp_data *data)
 
 	if (of_property_read_u32(np, "ssp-acc-position", &data->accel_position))
 		data->accel_position = 0;
-
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 	if (variant_edge == IS_EDGE) {
 		if (of_property_read_u32(np, "ssp-mag-position_E", &data->mag_position))
 			data->mag_position = 0;
@@ -254,7 +255,10 @@ static int ssp_parse_dt(struct device *dev,struct  ssp_data *data)
 		if (of_property_read_u32(np, "ssp-mag-position", &data->mag_position))
 			data->mag_position = 0;
 	}
-
+#else
+	if (of_property_read_u32(np, "ssp-mag-position", &data->mag_position))
+		data->mag_position = 0;
+#endif
 	pr_info("[SSP] acc-posi[%d] mag-posi[%d]\n",
 		data->accel_position, data->mag_position);
 
@@ -289,6 +293,7 @@ static int ssp_parse_dt(struct device *dev,struct  ssp_data *data)
 		data->uProxHiThresh_cal, data->uProxLoThresh_cal);
 
 #ifdef CONFIG_SENSORS_MULTIPLE_GLASS_TYPE
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 	if (variant_edge == IS_EDGE) {
 	    	if (of_property_read_u32(np, "ssp-glass-type_E", &data->glass_type))
 			    data->glass_type = 0;
@@ -296,9 +301,14 @@ static int ssp_parse_dt(struct device *dev,struct  ssp_data *data)
 	    	if (of_property_read_u32(np, "ssp-glass-type", &data->glass_type))
 			    data->glass_type = 0;
 	}
+#else
+    	if (of_property_read_u32(np, "ssp-glass-type", &data->glass_type))
+		    data->glass_type = 0;
+#endif
 #endif
 
 #if defined(CONFIG_SENSORS_SSP_YAS532) || defined(CONFIG_SENSORS_SSP_YAS537)
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 	if (model_type == VARDET_G920T || model_type == VARDET_G920W8) {
 		if (!of_get_property(np, "ssp-mag-array_T", &len)) {
 			pr_info("[SSP] No static matrix at DT for YAS532!(%p)\n", data->static_matrix);
@@ -320,13 +330,19 @@ static int ssp_parse_dt(struct device *dev,struct  ssp_data *data)
 			goto dt_exit;
 		}
  	}
+#else
+	if (!of_get_property(np, "ssp-mag-array", &len)) {
+		pr_info("[SSP] No static matrix at DT for YAS532!(%p)\n", data->static_matrix);
+		goto dt_exit;
+	}
+#endif
 	if (len/4 != 9) {
 		pr_err("[SSP] Length/4:%d should be 9 for YAS532!\n", len/4);
 		goto dt_exit;
 	}
 	data->static_matrix = kzalloc(9*sizeof(s16), GFP_KERNEL);
 	pr_info("[SSP] static matrix Length:%d, Len/4=%d\n", len, len/4);
-
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 	if (model_type == VARDET_G920T || model_type == VARDET_G920W8) {
 		for (i = 0; i < 9; i++) {
 			if (of_property_read_u32_index(np, "ssp-mag-array_T", i, &temp)) {
@@ -360,6 +376,15 @@ static int ssp_parse_dt(struct device *dev,struct  ssp_data *data)
 			*(data->static_matrix+i) = (int)temp;
  		}
 	}
+#else
+	for (i = 0; i < 9; i++) {
+		if (of_property_read_u32_index(np, "ssp-mag-array", i, &temp)) {
+			pr_err("[SSP] %s cannot get u32 of array[%d]!\n", __func__, i);
+			goto dt_exit;
+        }
+       *(data->static_matrix+i) = (int)temp;
+    }
+#endif
 #endif
 	return errorno;
 

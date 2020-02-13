@@ -386,3 +386,10 @@ config SEC_BAT_AUT
 	help
 	  Samsung TN Bat Automation Test
 
+config DONT_UNIFY_ME_PLS
+	bool "Disable Unification."
+	default n
+	help
+	  Disable unification when needed.
+
+

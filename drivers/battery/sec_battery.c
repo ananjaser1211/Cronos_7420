@@ -12,7 +12,9 @@
 #include <linux/battery/sec_battery.h>
 
 #include <linux/sec_debug.h>
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 #include <linux/variant_detection.h>
+#endif
 #include <linux/moduleparam.h>
 
 static int wl_polling = 10;
@@ -6574,14 +6576,17 @@ static int sec_bat_parse_dt(struct device *dev,
 		&pdata->technology);
 	if (ret)
 		pr_info("%s : technology is Empty\n", __func__);
-
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 	if (variant_edge == IS_EDGE)
 		ret = of_property_read_u32(np,
 			"battery,wireless_cc_cv_E", &pdata->wireless_cc_cv);
 	else
 		ret = of_property_read_u32(np,
 			"battery,wireless_cc_cv_F", &pdata->wireless_cc_cv);
-
+#else
+	ret = of_property_read_u32(np,
+		"battery,wireless_cc_cv", &pdata->wireless_cc_cv);
+#endif
 
 	pdata->waterproof = of_property_read_bool(np, "battery,waterproof");
 
@@ -6606,12 +6611,14 @@ static int sec_bat_parse_dt(struct device *dev,
 		pr_info("%s : Thermal source is Empty\n", __func__);
 
 	if (pdata->thermal_source == SEC_BATTERY_THERMAL_SOURCE_ADC) {
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 		if (variant_edge == IS_EDGE)
 			p = of_get_property(np, "battery,temp_table_adc_E", &len);
 		else
 			p = of_get_property(np, "battery,temp_table_adc_F", &len);
-
-
+#else
+		p = of_get_property(np, "battery,temp_table_adc", &len);
+#endif
 		if (!p)
 			return 1;
 
@@ -6626,7 +6633,7 @@ static int sec_bat_parse_dt(struct device *dev,
 		pdata->temp_amb_adc_table =
 			kzalloc(sizeof(sec_bat_adc_table_data_t) *
 				pdata->temp_adc_table_size, GFP_KERNEL);
-
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 		for(i = 0; i < pdata->temp_adc_table_size; i++) {
 			if (variant_edge == IS_EDGE)
 				ret = of_property_read_u32_index(np,
@@ -6719,6 +6726,66 @@ static int sec_bat_parse_dt(struct device *dev,
 				pr_info("%s : CHG_Temp_adc_table(data) is Empty\n",
 					__func__);
 		}
+#else
+		for(i = 0; i < pdata->temp_adc_table_size; i++) {
+			ret = of_property_read_u32_index(np,
+					 "battery,temp_table_adc", i, &temp);
+			pdata->temp_adc_table[i].adc = (int)temp;
+			if (ret)
+				pr_info("%s : Temp_adc_table(adc) is Empty\n",
+					__func__);
+
+			ret = of_property_read_u32_index(np,
+							 "battery,temp_table_data", i, &temp);
+			pdata->temp_adc_table[i].data = (int)temp;
+			if (ret)
+				pr_info("%s : Temp_adc_table(data) is Empty\n",
+					__func__);
+
+			ret = of_property_read_u32_index(np,
+							 "battery,temp_table_adc", i, &temp);
+			pdata->temp_amb_adc_table[i].adc = (int)temp;
+			if (ret)
+				pr_info("%s : Temp_amb_adc_table(adc) is Empty\n",
+					__func__);
+
+			ret = of_property_read_u32_index(np,
+							 "battery,temp_table_data", i, &temp);
+			pdata->temp_amb_adc_table[i].data = (int)temp;
+			if (ret)
+				pr_info("%s : Temp_amb_adc_table(data) is Empty\n",
+					__func__);
+		}
+
+		/* chg temp adc */
+		p = of_get_property(np, "battery,chg_temp_table_adc", &len);
+		if (!p)
+			return 1;
+
+		len = len / sizeof(u32);
+
+		pdata->chg_temp_adc_table_size = len;
+
+		pdata->chg_temp_adc_table =
+			kzalloc(sizeof(sec_bat_adc_table_data_t) *
+				pdata->chg_temp_adc_table_size, GFP_KERNEL);
+
+		for(i = 0; i < pdata->chg_temp_adc_table_size; i++) {
+			ret = of_property_read_u32_index(np,
+							 "battery,chg_temp_table_adc", i, &temp);
+			pdata->chg_temp_adc_table[i].adc = (int)temp;
+			if (ret)
+				pr_info("%s : CHG_Temp_adc_table(adc) is Empty\n",
+					__func__);
+
+			ret = of_property_read_u32_index(np,
+							 "battery,chg_temp_table_data", i, &temp);
+			pdata->chg_temp_adc_table[i].data = (int)temp;
+			if (ret)
+				pr_info("%s : CHG_Temp_adc_table(data) is Empty\n",
+					__func__);
+		}
+#endif
 
 		/* wpc temp adc */
 		p = of_get_property(np, "battery,wpc_temp_table_adc", &len);
@@ -6798,7 +6865,7 @@ static int sec_bat_parse_dt(struct device *dev,
 		&pdata->wpc_temp_check);
 	if (ret)
 		pr_info("%s : wpc_temp_check is Empty\n", __func__);
-
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 	if (pdata->chg_temp_check) {
 		if (variant_edge == IS_EDGE) {
 			ret = of_property_read_u32(np, "battery,chg_high_temp_1st_E",
@@ -6837,7 +6904,26 @@ static int sec_bat_parse_dt(struct device *dev,
 			if (ret)
 				pr_info("%s : chg_temp_recovery is Empty\n", __func__);
 		}
+#else
+	if (pdata->chg_temp_check) {
+		ret = of_property_read_u32(np, "battery,chg_high_temp_1st",
+					   &temp);
+		pdata->chg_high_temp_1st = (int)temp;
+		if (ret)
+			pr_info("%s : chg_high_temp_threshold is Empty\n", __func__);
 
+		ret = of_property_read_u32(np, "battery,chg_high_temp_2nd",
+					   &temp);
+		pdata->chg_high_temp_2nd = (int)temp;
+		if (ret)
+			pr_info("%s : chg_high_temp_threshold is Empty\n", __func__);
+
+		ret = of_property_read_u32(np, "battery,chg_high_temp_recovery",
+					   &temp);
+		pdata->chg_high_temp_recovery = (int)temp;
+		if (ret)
+			pr_info("%s : chg_temp_recovery is Empty\n", __func__);
+#endif
 		ret = of_property_read_u32(np, "battery,chg_charging_limit_current",
 					   &pdata->chg_charging_limit_current);
 		if (ret)
@@ -6979,13 +7065,17 @@ static int sec_bat_parse_dt(struct device *dev,
 			&pdata->inbat_voltage);
 	if (ret)
 		pr_info("%s : inbat_voltage is Empty\n", __func__);
-
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 	if (pdata->inbat_voltage) {
 		if (variant_edge == IS_EDGE)
 			p = of_get_property(np, "battery,inbat_voltage_table_adc_E", &len);
 		else
 			p = of_get_property(np, "battery,inbat_voltage_table_adc_F", &len);
+#else
 
+	if (pdata->inbat_voltage) {
+		p = of_get_property(np, "battery,inbat_voltage_table_adc", &len);
+#endif
 		if (!p)
 			return 1;
 
@@ -6996,7 +7086,7 @@ static int sec_bat_parse_dt(struct device *dev,
 		pdata->inbat_adc_table =
 			kzalloc(sizeof(sec_bat_adc_table_data_t) *
 					pdata->inbat_adc_table_size, GFP_KERNEL);
-
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 		for(i = 0; i < pdata->inbat_adc_table_size; i++) {
 			if (variant_edge == IS_EDGE)
 				ret = of_property_read_u32_index(np,
@@ -7004,7 +7094,12 @@ static int sec_bat_parse_dt(struct device *dev,
 			else
 				ret = of_property_read_u32_index(np,
 							 "battery,inbat_voltage_table_adc_F", i, &temp);
+#else
 
+		for(i = 0; i < pdata->inbat_adc_table_size; i++) {
+			ret = of_property_read_u32_index(np,
+							 "battery,inbat_voltage_table_adc", i, &temp);
+#endif
 			pdata->inbat_adc_table[i].adc = (int)temp;
 			if (ret)
 				pr_info("%s : inbat_adc_table(adc) is Empty\n",
@@ -7144,7 +7239,7 @@ static int sec_bat_parse_dt(struct device *dev,
 	pdata->temp_highlimit_recovery_event = (int)temp;
 	if (ret)
 		pr_info("%s : Temp highlimit recovery event is Empty\n", __func__);
-
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 	if (variant_edge == IS_EDGE)
 		ret = of_property_read_u32(np, "battery,temp_high_threshold_event_E",
 				   &temp);
@@ -7162,7 +7257,16 @@ static int sec_bat_parse_dt(struct device *dev,
 	else
 		ret = of_property_read_u32(np, "battery,temp_high_recovery_event_F",
 				   &temp);
+#else
+	ret = of_property_read_u32(np, "battery,temp_high_threshold_event",
+				   &temp);
+	pdata->temp_high_threshold_event =  (int)temp;
+	if (ret)
+		pr_info("%s : Temp high threshold event is Empty\n", __func__);
 
+	ret = of_property_read_u32(np, "battery,temp_high_recovery_event",
+				   &temp);
+#endif
 	pdata->temp_high_recovery_event =  (int)temp;
 	if (ret)
 		pr_info("%s : Temp high recovery event is Empty\n", __func__);
@@ -7190,7 +7294,7 @@ static int sec_bat_parse_dt(struct device *dev,
 	pdata->temp_highlimit_recovery_normal =  (int)temp;
 	if (ret)
 		pr_info("%s : Temp highlimit recovery normal is Empty\n", __func__);
-
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 	if (variant_edge == IS_EDGE)
 		ret = of_property_read_u32(np, "battery,temp_high_threshold_normal_E",
 				   &temp);
@@ -7208,7 +7312,17 @@ static int sec_bat_parse_dt(struct device *dev,
 	else
 		ret = of_property_read_u32(np, "battery,temp_high_recovery_normal_F",
 				   &temp);
+#else
 
+	ret = of_property_read_u32(np, "battery,temp_high_threshold_normal",
+				   &temp);
+	pdata->temp_high_threshold_normal =  (int)temp;
+	if (ret)
+		pr_info("%s : Temp high threshold normal is Empty\n", __func__);
+
+	ret = of_property_read_u32(np, "battery,temp_high_recovery_normal",
+				   &temp);
+#endif
 	pdata->temp_high_recovery_normal =  (int)temp;
 	if (ret)
 		pr_info("%s : Temp high recovery normal is Empty\n", __func__);
@@ -7236,7 +7350,7 @@ static int sec_bat_parse_dt(struct device *dev,
 	pdata->temp_highlimit_recovery_lpm = (int)temp;
 	if (ret)
 		pr_info("%s : Temp highlimit recovery lpm is Empty\n", __func__);
-
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 	if (variant_edge == IS_EDGE) {
 		ret = of_property_read_u32(np, "battery,temp_high_threshold_lpm_E",
 				   &temp);
@@ -7274,6 +7388,26 @@ static int sec_bat_parse_dt(struct device *dev,
 		if (ret)
 			pr_info("%s : Temp low threshold lpm is Empty\n", __func__);
 	}
+#else
+
+	ret = of_property_read_u32(np, "battery,temp_high_threshold_lpm",
+				   &temp);
+	pdata->temp_high_threshold_lpm = (int)temp;
+	if (ret)
+		pr_info("%s : Temp high threshold lpm is Empty\n", __func__);
+
+	ret = of_property_read_u32(np, "battery,temp_high_recovery_lpm",
+				   &temp);
+	pdata->temp_high_recovery_lpm = (int)temp;
+	if (ret)
+		pr_info("%s : Temp high recovery lpm is Empty\n", __func__);
+
+	ret = of_property_read_u32(np, "battery,temp_low_threshold_lpm",
+				   &temp);
+	pdata->temp_low_threshold_lpm = (int)temp;
+	if (ret)
+		pr_info("%s : Temp low threshold lpm is Empty\n", __func__);
+#endif
 	ret = of_property_read_u32(np, "battery,temp_low_recovery_lpm",
 				   &temp);
 	pdata->temp_low_recovery_lpm = (int)temp;

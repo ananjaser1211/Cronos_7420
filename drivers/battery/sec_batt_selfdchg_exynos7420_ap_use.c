@@ -46,8 +46,9 @@
 //#define SDCHG_SUB_POLICY_SET				// AP Policy Only
 
 #include <linux/sec_batt_selfdchg_common.h>
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 #include <linux/variant_detection.h>
-
+#endif
 /******************************************/
 // Samsung Custom Header
 #ifdef CONFIG_ARM_EXYNOS_MP_CPUFREQ
@@ -628,6 +629,7 @@ static void sdchg_exynos7420_ap_use_parse_dt(struct device *dev)
 	sdchg_info->voltage_start = SDCHG_VOLTAGE_START;
 	sdchg_info->voltage_end = SDCHG_VOLTAGE_END;
 #else
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 	if (variant_edge == NOT_EDGE) {
 		if (of_property_read_u32(data_np, "sdchg,temperature_start",
 							&sdchg_info->temp_start)) {
@@ -663,6 +665,42 @@ static void sdchg_exynos7420_ap_use_parse_dt(struct device *dev)
 			pr_info("[SDCHG][%s] voltage_start dt is Empty  (defalut:%d)", 
 				__func__, sdchg_info->voltage_start);
 		}
+#else
+	if (of_property_read_u32(data_np, "sdchg,temperature_start",
+							&sdchg_info->temp_start)) {
+		sdchg_info->temp_start = SDCHG_TEMP_START;
+		pr_info("[SDCHG][%s] temp_start dt is Empty (defalut:%d)", 
+			__func__, sdchg_info->temp_start);
+	}
+
+	if (of_property_read_u32(data_np, "sdchg,temperature_end",
+							 &sdchg_info->temp_end)) {
+		sdchg_info->temp_end = SDCHG_TEMP_END;
+		pr_info("[SDCHG][%s] temp_end dt is Empty  (defalut:%d)", 
+			__func__, sdchg_info->temp_end);
+	}
+
+	if (of_property_read_u32(data_np, "sdchg,soc_start",
+							   &sdchg_info->soc_start)) {
+		sdchg_info->soc_start = SDCHG_SOC_START;
+		pr_info("[SDCHG][%s] soc_start dt is Empty  (defalut:%d)", 
+			__func__, sdchg_info->soc_start);
+	}
+
+	if (of_property_read_u32(data_np, "sdchg,soc_end",
+							   &sdchg_info->soc_end)) {
+		sdchg_info->soc_end = SDCHG_SOC_END;
+		pr_info("[SDCHG][%s] soc_end dt is Empty  (defalut:%d)", 
+			__func__, sdchg_info->soc_end);
+	}
+
+	if (of_property_read_u32(data_np, "sdchg,voltage_start",
+							   &sdchg_info->voltage_start)) {
+		sdchg_info->voltage_start = SDCHG_VOLTAGE_START;
+		pr_info("[SDCHG][%s] voltage_start dt is Empty  (defalut:%d)", 
+			__func__, sdchg_info->voltage_start);
+	}
+#endif
  	}
 
 	// voltage_end : using swelling_drop_float_voltage value
