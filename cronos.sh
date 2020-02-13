@@ -22,8 +22,8 @@ CR_DIR=$(pwd)
 CR_TC=~/Android/Toolchains/linaro-7.5.0-aarch64-linux/bin/aarch64-linux-gnu-
 # Define proper arch and dir for dts files
 CR_DTS=arch/arm64/boot/dts
-CR_DTS_S6_2600=arch/arm64/boot/zeroflte_2600.dtsi
-CR_DTS_S6_3600=arch/arm64/boot/zeroflte_3600.dtsi
+CR_DTS_S6_2600=arch/arm64/boot/G92X_battery_2600.dtsi
+CR_DTS_S6_3600=arch/arm64/boot/G92X_battery_3600.dtsi
 CR_DECON=$CR_DIR/drivers/video/exynos
 # Define boot.img out dir
 CR_OUT=$CR_DIR/Cronos/out
@@ -141,7 +141,7 @@ if [ $CR_CLEAN = 1 ]; then
      rm -rf $CR_DIR/.config
      rm -rf $CR_OUT/*.img
      rm -rf $CR_OUT/*.zip
-#     rm -rf $CR_DTS/exynos7420-zeroflte_eur_battery_09.dtsi
+     rm -rf $CR_DTS/G92X_battery.dtsi
 fi
 if [ $CR_CLEAN = 0 ]; then
      echo " "
@@ -151,7 +151,7 @@ if [ $CR_CLEAN = 0 ]; then
      rm -rf $CR_DTS/.*.cmd
      rm -rf $CR_DTS/*.dtb
      rm -rf $CR_DIR/.config
- #    rm -rf $CR_DTS/exynos7420-zeroflte_eur_battery_09.dtsi
+     rm -rf $CR_DTS/G92X_battery.dtsi
 fi
 }
 
@@ -230,11 +230,11 @@ BUILD_ZIMAGE()
 	export LOCALVERSION=-$CR_IMAGE_NAME
     if [ $CR_S6MOD = "1" ]; then
     echo " Copy Modded S6 Battery DTSI"
-  	cp $CR_DTS_S6_3600 $CR_DTS/exynos7420-zeroflte_eur_battery_09.dtsi
+  	cp $CR_DTS_S6_3600 $CR_DTS/G92X_battery.dtsi
     fi
     if [ $CR_S6MOD = "0" ]; then
     echo " Copy Stock S6 Battery DTSI"
-  	cp $CR_DTS_S6_2600 $CR_DTS/exynos7420-zeroflte_eur_battery_09.dtsi
+  	cp $CR_DTS_S6_2600 $CR_DTS/G92X_battery.dtsi
     fi
 	echo "Make $CR_CONFIG"
 	make $CR_CONFIG
@@ -390,16 +390,16 @@ do
               CR_VARIANT=$CR_VARIANT-Q
               CR_RAMDISK=$CR_RAMDISK_Q
             fi
-#            read -p "Extended Battery? (y/n) > " yn
-#            if [ "$yn" = "Y" -o "$yn" = "y" ]; then
-#                 echo "Including S7E Battery modded DTSI"
-#                 CR_S6MOD="1"
-#                 CR_VARIANT=$CR_VARIANT-3600mAh
-#            fi
-#            if [ "$yn" = "N" -o "$yn" = "n" ]; then
-#                 echo "Including Stock Battery DTSI"
-#                 CR_S6MOD="0"
-#            fi
+            read -p "Extended Battery? (y/n) > " yn
+            if [ "$yn" = "Y" -o "$yn" = "y" ]; then
+                 echo "Including S7E Battery modded DTSI"
+                 CR_S6MOD="1"
+                 CR_VARIANT=$CR_VARIANT-3600mAh
+            fi
+            if [ "$yn" = "N" -o "$yn" = "n" ]; then
+                 echo "Including Stock Battery DTSI"
+                 CR_S6MOD="0"
+            fi
             BUILD_HACKS
             BUILD_IMAGE_NAME
             BUILD_GENERATE_CONFIG
@@ -506,20 +506,13 @@ do
             BUILD_DTB
             PACK_BOOT_IMG
             BUILD_OUT
-            echo "Starting $CR_VARIANT_G920X kernel build..."
+            clear
+            echo "Starting $CR_VARIANT_G92X kernel build..."
             CR_CONFIG=$CR_CONFIG_G92X
-            CR_CONFIG_SPLIT=$CR_CONFIG_G920X
-            CR_DTSFILES=$CR_DTSFILES_G920X
+            CR_DTSFILES=$CR_DTSFILES_G92X
+            CR_VARIANT=$CR_VARIANT_G92X
             CR_VIDEO="zero"
-            if [ $CR_AUDIO = "2" ]; then
-              echo " Building US variant "
-              CR_CONFIG_AUDIO=$CR_CONFIG_AUDIENCE
-              CR_VARIANT=$CR_VARIANT_G920T
-            else
-              echo " Building intl variant "
-              CR_CONFIG_AUDIO=$CR_CONFIG_INTL
-              CR_VARIANT=$CR_VARIANT_G920X
-            fi
+            CR_AUDIO=NULL
             if [ $CR_MODE = "1" ]; then
               echo " Building Oneui variant "
               CR_VARIANT=$CR_VARIANT-OneUI
@@ -529,43 +522,6 @@ do
               CR_VARIANT=$CR_VARIANT-Q
               CR_RAMDISK=$CR_RAMDISK_Q
             fi
-            BUILD_HACKS
-            BUILD_IMAGE_NAME
-            BUILD_GENERATE_CONFIG
-            BUILD_ZIMAGE
-            BUILD_DTB
-            PACK_BOOT_IMG
-            BUILD_OUT
-            echo "Starting $CR_VARIANT_G925X kernel build..."
-            CR_CONFIG=$CR_CONFIG_G92X
-            CR_CONFIG_SPLIT=$CR_CONFIG_G925X
-            CR_DTSFILES=$CR_DTSFILES_G925X
-            CR_VIDEO="zero"
-            if [ $CR_AUDIO = "2" ]; then
-              echo " Building US variant "
-              CR_CONFIG_AUDIO=$CR_CONFIG_AUDIENCE
-              CR_VARIANT=$CR_VARIANT_G925T
-            else
-              echo " Building intl variant "
-              CR_CONFIG_AUDIO=$CR_CONFIG_INTL
-              CR_VARIANT=$CR_VARIANT_G925X
-            fi
-            if [ $CR_MODE = "1" ]; then
-              echo " Building Oneui variant "
-              CR_VARIANT=$CR_VARIANT-OneUI
-            fi
-            if [ $CR_MODE = "2" ]; then
-              echo " Building Oneui-Q variant "
-              CR_VARIANT=$CR_VARIANT-Q
-              CR_RAMDISK=$CR_RAMDISK_Q
-            fi
-            BUILD_HACKS
-            BUILD_IMAGE_NAME
-            BUILD_GENERATE_CONFIG
-            BUILD_ZIMAGE
-            BUILD_DTB
-            PACK_BOOT_IMG
-            BUILD_OUT
             read -n1 -r key
             break
             ;;
