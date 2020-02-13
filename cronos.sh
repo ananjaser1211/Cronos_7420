@@ -72,17 +72,20 @@ CR_CONFIG_G928X=zenlte_defconfig
 CR_VARIANT_G928X=G928X
 CR_VARIANT_G928T=G928TW8
 # Device specific Variables [SM-G92X]
-CR_DTSFILES_G920X="exynos7420-zeroflte_eur_open_00.dtb exynos7420-zeroflte_eur_open_01.dtb exynos7420-zeroflte_eur_open_02.dtb exynos7420-zeroflte_eur_open_03.dtb exynos7420-zeroflte_eur_open_04.dtb exynos7420-zeroflte_eur_open_05.dtb exynos7420-zeroflte_eur_open_06.dtb exynos7420-zeroflte_eur_open_07.dtb"
-CR_DTSFILES_G925X="exynos7420-zerolte_eur_open_01.dtb exynos7420-zerolte_eur_open_02.dtb exynos7420-zerolte_eur_open_03.dtb exynos7420-zerolte_eur_open_04.dtb exynos7420-zerolte_eur_open_05.dtb exynos7420-zerolte_eur_open_06.dtb exynos7420-zerolte_eur_open_07.dtb exynos7420-zerolte_eur_open_08.dtb"
-CR_DTSFILES_G920T="exynos7420-zeroflte_usa_00.dtb exynos7420-zeroflte_usa_01.dtb exynos7420-zeroflte_usa_02.dtb exynos7420-zeroflte_usa_03.dtb exynos7420-zeroflte_usa_04.dtb exynos7420-zeroflte_usa_05.dtb"
-CR_DTSFILES_G925T="exynos7420-zerolte_usa_01.dtb exynos7420-zerolte_usa_02.dtb exynos7420-zerolte_usa_03.dtb exynos7420-zerolte_usa_04.dtb exynos7420-zerolte_usa_05.dtb exynos7420-zerolte_usa_06 exynos7420-zerolte_usa_07.dtb exynos7420-zerolte_usa_08.dtb"
-CR_VARIANT_G920X=G920X
-CR_VARIANT_G920T=G920TW8
-CR_VARIANT_G925X=G925X
-CR_VARIANT_G925T=G925TW8
+CR_DTSFILES_G92X="G92X_universal.dtb"
+CR_VARIANT_G92X=G92X
 CR_CONFIG_G92X=zerolte_defconfig
-CR_CONFIG_G920X=zerof_defconfig
-CR_CONFIG_G925X=zero_defconfig
+# Pre Unification
+#CR_DTSFILES_G920X="exynos7420-zeroflte_eur_open_00.dtb exynos7420-zeroflte_eur_open_01.dtb exynos7420-zeroflte_eur_open_02.dtb exynos7420-zeroflte_eur_open_03.dtb exynos7420-zeroflte_eur_open_04.dtb exynos7420-zeroflte_eur_open_05.dtb exynos7420-zeroflte_eur_open_06.dtb exynos7420-zeroflte_eur_open_07.dtb"
+#CR_DTSFILES_G925X="exynos7420-zerolte_eur_open_01.dtb exynos7420-zerolte_eur_open_02.dtb exynos7420-zerolte_eur_open_03.dtb exynos7420-zerolte_eur_open_04.dtb exynos7420-zerolte_eur_open_05.dtb exynos7420-zerolte_eur_open_06.dtb exynos7420-zerolte_eur_open_07.dtb exynos7420-zerolte_eur_open_08.dtb"
+#CR_DTSFILES_G920T="exynos7420-zeroflte_usa_00.dtb exynos7420-zeroflte_usa_01.dtb exynos7420-zeroflte_usa_02.dtb exynos7420-zeroflte_usa_03.dtb exynos7420-zeroflte_usa_04.dtb exynos7420-zeroflte_usa_05.dtb"
+#CR_DTSFILES_G925T="exynos7420-zerolte_usa_01.dtb exynos7420-zerolte_usa_02.dtb exynos7420-zerolte_usa_03.dtb exynos7420-zerolte_usa_04.dtb exynos7420-zerolte_usa_05.dtb exynos7420-zerolte_usa_06 exynos7420-zerolte_usa_07.dtb exynos7420-zerolte_usa_08.dtb"
+#CR_VARIANT_G920X=G920X
+#CR_VARIANT_G920T=G920TW8
+#CR_VARIANT_G925X=G925X
+#CR_VARIANT_G925T=G925TW8
+#CR_CONFIG_G920X=zerof_defconfig
+#CR_CONFIG_G925X=zero_defconfig
 # Common configs
 CR_CONFIG_AUDIENCE=audience_defconfig
 CR_CONFIG_INTL=intl_defconfig
@@ -138,7 +141,7 @@ if [ $CR_CLEAN = 1 ]; then
      rm -rf $CR_DIR/.config
      rm -rf $CR_OUT/*.img
      rm -rf $CR_OUT/*.zip
-     rm -rf $CR_DTS/exynos7420-zeroflte_eur_battery_09.dtsi
+#     rm -rf $CR_DTS/exynos7420-zeroflte_eur_battery_09.dtsi
 fi
 if [ $CR_CLEAN = 0 ]; then
      echo " "
@@ -148,7 +151,7 @@ if [ $CR_CLEAN = 0 ]; then
      rm -rf $CR_DTS/.*.cmd
      rm -rf $CR_DTS/*.dtb
      rm -rf $CR_DIR/.config
-     rm -rf $CR_DTS/exynos7420-zeroflte_eur_battery_09.dtsi
+ #    rm -rf $CR_DTS/exynos7420-zeroflte_eur_battery_09.dtsi
 fi
 }
 
@@ -264,7 +267,6 @@ BUILD_DTB()
 	rm -rf $CR_DTS/.*.tmp
 	rm -rf $CR_DTS/.*.cmd
 	rm -rf $CR_DTS/*.dtb
-	rm -rf $CR_DTS/exynos7420.dtsi
     rm -rf $CR_DTS/exynos7420-zeroflte_eur_battery_09.dtsi
 	du -k "$CR_DTB" | cut -f1 >sizdT
 	sizdT=$(head -n 1 sizdT)
@@ -303,8 +305,8 @@ clear
 echo "----------------------------------------------"
 echo "$CR_NAME $CR_VERSION Build Script"
 echo "----------------------------------------------"
-PS3='Please select your option (1-7): '
-menuvar=("SM-N920X" "SM-N920P" "SM-G920X" "SM-G925X" "SM-G928X" "ALL" "Exit")
+PS3='Please select your option (1-6): '
+menuvar=("SM-N920X" "SM-N920P" "SM-G92X" "SM-G928X" "ALL" "Exit")
 select menuvar in "${menuvar[@]}"
 do
     case $menuvar in
@@ -371,23 +373,14 @@ do
             read -n1 -r key
             break
             ;;
-        "SM-G920X")
+        "SM-G92X")
             clear
-            echo "Starting $CR_VARIANT_G920X kernel build..."
+            echo "Starting $CR_VARIANT_G92X kernel build..."
             CR_CONFIG=$CR_CONFIG_G92X
-            CR_CONFIG_SPLIT=$CR_CONFIG_G920X
+            CR_DTSFILES=$CR_DTSFILES_G92X
+            CR_VARIANT=$CR_VARIANT_G92X
             CR_VIDEO="zero"
-            if [ $CR_AUDIO = "2" ]; then
-              echo " Building US variant "
-              CR_CONFIG_AUDIO=$CR_CONFIG_AUDIENCE
-              CR_VARIANT=$CR_VARIANT_G920T
-              CR_DTSFILES=$CR_DTSFILES_G920T
-            else
-              echo " Building intl variant "
-              CR_CONFIG_AUDIO=$CR_CONFIG_INTL
-              CR_VARIANT=$CR_VARIANT_G920X
-              CR_DTSFILES=$CR_DTSFILES_G920X
-            fi
+            CR_AUDIO=NULL
             if [ $CR_MODE = "1" ]; then
               echo " Building Oneui variant "
               CR_VARIANT=$CR_VARIANT-OneUI
@@ -397,52 +390,16 @@ do
               CR_VARIANT=$CR_VARIANT-Q
               CR_RAMDISK=$CR_RAMDISK_Q
             fi
-            read -p "Extended Battery? (y/n) > " yn
-            if [ "$yn" = "Y" -o "$yn" = "y" ]; then
-                 echo "Including S7E Battery modded DTSI"
-                 CR_S6MOD="1"
-                 CR_VARIANT=$CR_VARIANT-3600mAh
-            fi
-            if [ "$yn" = "N" -o "$yn" = "n" ]; then
-                 echo "Including Stock Battery DTSI"
-                 CR_S6MOD="0"
-            fi
-            BUILD_HACKS
-            BUILD_IMAGE_NAME
-            BUILD_GENERATE_CONFIG
-            BUILD_ZIMAGE
-            BUILD_DTB
-            PACK_BOOT_IMG
-            BUILD_OUT
-            read -n1 -r key
-            break
-            ;;
-        "SM-G925X")
-            clear
-            echo "Starting $CR_VARIANT_G925X kernel build..."
-            CR_CONFIG=$CR_CONFIG_G92X
-            CR_CONFIG_SPLIT=$CR_CONFIG_G925X
-            CR_VIDEO="zero"
-            if [ $CR_AUDIO = "2" ]; then
-              echo " Building US variant "
-              CR_CONFIG_AUDIO=$CR_CONFIG_AUDIENCE
-              CR_VARIANT=$CR_VARIANT_G925T
-              CR_DTSFILES=$CR_DTSFILES_G925T
-            else
-              echo " Building intl variant "
-              CR_CONFIG_AUDIO=$CR_CONFIG_INTL
-              CR_VARIANT=$CR_VARIANT_G925X
-              CR_DTSFILES=$CR_DTSFILES_G925X
-            fi
-            if [ $CR_MODE = "1" ]; then
-              echo " Building Oneui variant "
-              CR_VARIANT=$CR_VARIANT-OneUI
-            fi
-            if [ $CR_MODE = "2" ]; then
-              echo " Building Oneui-Q variant "
-              CR_VARIANT=$CR_VARIANT-Q
-              CR_RAMDISK=$CR_RAMDISK_Q
-            fi
+#            read -p "Extended Battery? (y/n) > " yn
+#            if [ "$yn" = "Y" -o "$yn" = "y" ]; then
+#                 echo "Including S7E Battery modded DTSI"
+#                 CR_S6MOD="1"
+#                 CR_VARIANT=$CR_VARIANT-3600mAh
+#            fi
+#            if [ "$yn" = "N" -o "$yn" = "n" ]; then
+#                 echo "Including Stock Battery DTSI"
+#                 CR_S6MOD="0"
+#            fi
             BUILD_HACKS
             BUILD_IMAGE_NAME
             BUILD_GENERATE_CONFIG
