@@ -17,6 +17,7 @@
 #include <linux/of_gpio.h>
 #include <linux/debugfs.h>
 #include <linux/seq_file.h>
+#include <linux/variant_detection.h>
 
 bool max77843_fg_fuelalert_init(struct max77843_fuelgauge_data *fuelgauge, int soc);
 
@@ -2172,14 +2173,24 @@ static int max77843_fuelgauge_parse_dt(struct max77843_fuelgauge_data *fuelgauge
 				__func__, fuelgauge->battery_data->sw_v_empty_vol, fuelgauge->battery_data->sw_v_empty_recover_vol);			
 		}
 
-		ret = of_property_read_u32(np, "fuelgauge,qrtable20",
+		if (variant_edge == IS_EDGE)
+			ret = of_property_read_u32(np, "fuelgauge,qrtable20_E",
 					   &fuelgauge->battery_data->QResidual20);
+		else
+			ret = of_property_read_u32(np, "fuelgauge,qrtable20_F",
+					   &fuelgauge->battery_data->QResidual20);
+
 		if (ret < 0)
 			pr_err("%s error reading qrtable20 %d\n",
 			       __func__, ret);
 
-		ret = of_property_read_u32(np, "fuelgauge,qrtable30",
+		if (variant_edge == IS_EDGE)
+			ret = of_property_read_u32(np, "fuelgauge,qrtable30_E",
 					   &fuelgauge->battery_data->QResidual30);
+		else
+			ret = of_property_read_u32(np, "fuelgauge,qrtable30_F",
+					   &fuelgauge->battery_data->QResidual30);
+
 		if (ret < 0)
 			pr_err("%s error reading qrtabel30 %d\n",
 			       __func__, ret);

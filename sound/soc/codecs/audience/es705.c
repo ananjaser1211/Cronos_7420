@@ -59,6 +59,7 @@
 #include "es705-uart.h"
 #include "es705-uart-common.h"
 #include "es705-veq-params.h"
+#include <linux/variant_detection.h>
 
 #define CHECK_ROUTE_STATUS_AND_RECONFIG
 #if defined(CHECK_ROUTE_STATUS_AND_RECONFIG)
@@ -5809,6 +5810,9 @@ int es705_core_init(struct device *dev)
 	struct esxxx_platform_data *pdata = dev->platform_data;
 	int rc = 0;
 
+	if (variant_aif_required == NO_AIF)
+		return rc;
+
 	if (pdata == NULL) {
 		dev_err(dev, "%s(): pdata is NULL", __func__);
 		rc = -EIO;
@@ -6091,6 +6095,9 @@ static __init int es705_init(void)
 {
 	int rc = 0;
 
+	if (variant_aif_required == NO_AIF)
+		return rc;
+
 	mutex_init(&es705_priv.api_mutex);
 	mutex_init(&es705_priv.pm_mutex);
 	mutex_init(&es705_priv.cvq_mutex);
@@ -6154,6 +6161,9 @@ module_init(es705_init);
 
 static __exit void es705_exit(void)
 {
+	if (variant_aif_required == NO_AIF)
+		return;
+
 	if (es705_priv.fw_requested) {
 		release_firmware(es705_priv.standard);
 #if defined(CONFIG_SND_SOC_ESXXX_SEAMLESS_VOICE_WAKEUP)
