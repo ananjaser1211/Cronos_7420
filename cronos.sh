@@ -87,7 +87,7 @@ CR_CONFIG_AUDIENCE=audience_defconfig
 CR_CONFIG_INTL=intl_defconfig
 CR_CONFIG_SPLIT=NULL
 CR_CONFIG_HELIOS=helios_defconfig
-CR_S6MOD="0"
+CR_S6MOD="2"
 CR_AUDIO=NULL
 #####################################################
 
@@ -225,11 +225,15 @@ BUILD_ZIMAGE()
 	export LOCALVERSION=-$CR_IMAGE_NAME
     if [ $CR_S6MOD = "1" ]; then
     echo " Copy Modded S6 Battery DTSI"
+    rm -rf $CR_DTS/G92X_battery.dtsi
   	cp $CR_DTS_S6_3600 $CR_DTS/G92X_battery.dtsi
+    CR_VARIANT=$CR_VARIANT-ext
     fi
     if [ $CR_S6MOD = "0" ]; then
     echo " Copy Stock S6 Battery DTSI"
+    rm -rf $CR_DTS/G92X_battery.dtsi
   	cp $CR_DTS_S6_2600 $CR_DTS/G92X_battery.dtsi
+    CR_VARIANT=$CR_VARIANT-stk
     fi
 	echo "Make $CR_CONFIG"
 	make $CR_CONFIG
@@ -262,7 +266,7 @@ BUILD_DTB()
 	rm -rf $CR_DTS/.*.tmp
 	rm -rf $CR_DTS/.*.cmd
 	rm -rf $CR_DTS/*.dtb
-    rm -rf $CR_DTS/exynos7420-zeroflte_eur_battery_09.dtsi
+  rm -rf $CR_DTS/G92X_battery.dtsi
 	du -k "$CR_DTB" | cut -f1 >sizdT
 	sizdT=$(head -n 1 sizdT)
 	rm -rf sizdT
@@ -331,10 +335,10 @@ do
               CR_RAMDISK=$CR_RAMDISK_Q
             fi
             BUILD_HACKS
-            BUILD_IMAGE_NAME
             BUILD_GENERATE_CONFIG
             BUILD_ZIMAGE
             BUILD_DTB
+            BUILD_IMAGE_NAME
             PACK_BOOT_IMG
             BUILD_OUT
             read -n1 -r key
@@ -361,17 +365,16 @@ do
             if [ "$yn" = "Y" -o "$yn" = "y" ]; then
                  echo "Including S7E Battery modded DTSI"
                  CR_S6MOD="1"
-                 CR_VARIANT=$CR_VARIANT-3600mAh
             fi
             if [ "$yn" = "N" -o "$yn" = "n" ]; then
                  echo "Including Stock Battery DTSI"
                  CR_S6MOD="0"
             fi
             BUILD_HACKS
-            BUILD_IMAGE_NAME
             BUILD_GENERATE_CONFIG
             BUILD_ZIMAGE
             BUILD_DTB
+            BUILD_IMAGE_NAME
             PACK_BOOT_IMG
             BUILD_OUT
             read -n1 -r key
@@ -403,10 +406,10 @@ do
               CR_RAMDISK=$CR_RAMDISK_Q
             fi
             BUILD_HACKS
-            BUILD_IMAGE_NAME
             BUILD_GENERATE_CONFIG
             BUILD_ZIMAGE
             BUILD_DTB
+            BUILD_IMAGE_NAME
             PACK_BOOT_IMG
             BUILD_OUT
             read -n1 -r key
@@ -437,10 +440,10 @@ do
               CR_RAMDISK=$CR_RAMDISK_Q
             fi
             BUILD_HACKS
-            BUILD_IMAGE_NAME
             BUILD_GENERATE_CONFIG
             BUILD_ZIMAGE
             BUILD_DTB
+            BUILD_IMAGE_NAME
             PACK_BOOT_IMG
             BUILD_OUT
             echo "Starting $CR_VARIANT_G928X kernel build..."
@@ -467,14 +470,14 @@ do
               CR_RAMDISK=$CR_RAMDISK_Q
             fi
             BUILD_HACKS
-            BUILD_IMAGE_NAME
             BUILD_GENERATE_CONFIG
             BUILD_ZIMAGE
             BUILD_DTB
+            BUILD_IMAGE_NAME
             PACK_BOOT_IMG
             BUILD_OUT
             clear
-            echo "Starting $CR_VARIANT_G92X kernel build..."
+            echo "Starting $CR_VARIANT_G92X 2600 kernel build..."
             CR_CONFIG=$CR_CONFIG_G92X
             CR_DTSFILES=$CR_DTSFILES_G92X
             CR_VARIANT=$CR_VARIANT_G92X
@@ -489,6 +492,40 @@ do
               CR_VARIANT=$CR_VARIANT-Q
               CR_RAMDISK=$CR_RAMDISK_Q
             fi
+            echo "Including Stock Battery DTSI"
+            CR_S6MOD="0"
+            BUILD_HACKS
+            BUILD_GENERATE_CONFIG
+            BUILD_ZIMAGE
+            BUILD_DTB
+            BUILD_IMAGE_NAME
+            PACK_BOOT_IMG
+            BUILD_OUT
+            clear
+            echo "Starting $CR_VARIANT_G92X 3600 kernel build..."
+            CR_CONFIG=$CR_CONFIG_G92X
+            CR_DTSFILES=$CR_DTSFILES_G92X
+            CR_VARIANT=$CR_VARIANT_G92X
+            CR_VIDEO="zero"
+            CR_AUDIO=NULL
+            if [ $CR_MODE = "1" ]; then
+              echo " Building Oneui variant "
+              CR_VARIANT=$CR_VARIANT-OneUI
+            fi
+            if [ $CR_MODE = "2" ]; then
+              echo " Building Oneui-Q variant "
+              CR_VARIANT=$CR_VARIANT-Q
+              CR_RAMDISK=$CR_RAMDISK_Q
+            fi
+            echo "Including S7E Battery modded DTSI"
+            CR_S6MOD="1"
+            BUILD_HACKS
+            BUILD_GENERATE_CONFIG
+            BUILD_ZIMAGE
+            BUILD_DTB
+            BUILD_IMAGE_NAME
+            PACK_BOOT_IMG
+            BUILD_OUT
             read -n1 -r key
             break
             ;;
