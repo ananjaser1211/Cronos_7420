@@ -853,7 +853,7 @@
 	ipa_pdata {
 		compatible = "samsung,exynos-ipa";
 
-		control_temp = <45>;
+		control_temp = <90>;
 		temp_threshold = <10>;
 		enabled = <1>;
 		tdp = <3500>;
@@ -2031,9 +2031,10 @@
 		boot_device@3 {
 			net_boost,label="P2P";
 			net_boost,node="p2p-wlan0-0";
-			net_boost,table_size = <2>;
+			net_boost,table_size = <3>;
 			net_boost,table= <
 				30 1200000 0 1200000 0 0 200000 0 0 0
+				50 1500000 0 1200000 0 0 200000 0 0 0
 				90 1700000 0 1200000 0 543000 267000 0 0 1
 				>;
 		};
@@ -2051,9 +2052,10 @@
 		boot_device@5 {
 			net_boost,label="QIPC";
 			net_boost,node="rmnet_data0 rmnet_data1 rmnet_data2 rmnet_data3 rmnet_data4 rmnet_data5 rmnet_data6 rmnet_data7";
-			net_boost,table_size = <2>;
+			net_boost,table_size = <3>;
 			net_boost,table= <
 				10 0 0 1104000 0 825000 100000 0 1 0 /* 10Mbps little core 1.1G */
+				50 0 0 1104000 0 825000 100000 0 1 0 /* 50Mbps little core 1.1G */
 				100 0 0 1500000 0 825000 100000 0 1 0 /* 100Mbps little core 1.5G */
 				>;
 		};
@@ -2082,9 +2084,8 @@
 		boot_device@8 {
 			net_boost,label="WIFI RX";
 			net_boost,node="wlan0";
-			net_boost,table_size = <5>;
+			net_boost,table_size = <4>;
 			net_boost,table= <
-				75 1000000 0 800000 0 0 0 0 0 0
 				100 1144000 0 1066000 0 0 0 0 0 0
 				150 1456000 0 1378000 0 0 0 0 0 0
 				200 1664000 0 1586000 0 845000 400000 1 1 1
@@ -2107,7 +2108,7 @@
 
 			/* Frequency table */
 			/* for level	:	1_Head */
-			input_booster,cpu_freqs = <1200000>;
+			input_booster,cpu_freqs = <1000000>;
 			input_booster,hmp_boost = <1>;
 			input_booster,kfc_freqs = <0>;
 			input_booster,mif_freqs = <0>;
@@ -2126,7 +2127,7 @@
 
 			/* Frequency table */
 			/* for level	:	1_Head */
-			input_booster,cpu_freqs = <1200000>;
+			input_booster,cpu_freqs = <1000000>;
 			input_booster,hmp_boost = <1>;
 			input_booster,kfc_freqs = <0>;
 			input_booster,mif_freqs = <0>;
@@ -2145,7 +2146,7 @@
 
 			/* Frequency table */
 			/* for level	:	1_Head, 2_Head, 2_Tail */
-			input_booster,cpu_freqs = <1200000 1200000 0>;
+			input_booster,cpu_freqs = <1000000 1000000 0>;
 			input_booster,hmp_boost = <1 1 0>;
 			input_booster,kfc_freqs = <800000 800000 1296000>;
 			input_booster,mif_freqs = <0 0 0>;
@@ -2153,7 +2154,7 @@
 
 			/* Time table */
 			input_booster,head_times = <130 130 0>;
-			input_booster,tail_times = <0 0 500>;
+			input_booster,tail_times = <500 500 0>;
 			input_booster,phase_times = <0 0 0>;
 		};
 		booster_key@4 { // Input Booster +
@@ -2164,15 +2165,15 @@
 
 			/* Frequency table */
 			/* for level	:	1_Head 2_Tail*/
-			input_booster,cpu_freqs = <1200000 0>;
+			input_booster,cpu_freqs = <1100000 0>;
 			input_booster,hmp_boost = <1 1>;
 			input_booster,kfc_freqs = <800000 800000>;
 			input_booster,mif_freqs = <0 0>;
 			input_booster,int_freqs = <0 0>;
 
 			/* Time table */
-			input_booster,head_times = <1000 0>;
-			input_booster,tail_times = <0 500>;
+			input_booster,head_times = <1000 1000>;
+			input_booster,tail_times = <500 500>;
 			input_booster,phase_times = <0 0>;
 		};
 		booster_key@5 {
@@ -2183,7 +2184,7 @@
 
 			/* Frequency table */
 			/* for level	:	1_Head 2_Tail*/
-			input_booster,cpu_freqs = <1200000 1200000>;
+			input_booster,cpu_freqs = <1100000 1100000>;
 			input_booster,hmp_boost = <1 1>;
 			input_booster,kfc_freqs = <800000 800000>;
 			input_booster,mif_freqs = <0 0>;
@@ -2202,15 +2203,15 @@
 
 			/* Frequency table */
 			/* for level	:	1_Head 2_Tail*/
-			input_booster,cpu_freqs = <1200000 0>;
+			input_booster,cpu_freqs = <1000000 0>;
 			input_booster,hmp_boost = <1 0>;
 			input_booster,kfc_freqs = <800000 1200000>;
 			input_booster,mif_freqs = <0 0>;
 			input_booster,int_freqs = <0 0>;
 
 			/* Time table */
-			input_booster,head_times = <130 0>;
-			input_booster,tail_times = <0 500>;
+			input_booster,head_times = <130 130>;
+			input_booster,tail_times = <500 500>;
 			input_booster,phase_times = <0 0>;
 		};
 		booster_key@7 {
@@ -2221,7 +2222,7 @@
 
 			/* Frequency table */
 			/* for level	:	1_Head 2_Tail*/
-			input_booster,cpu_freqs = <1200000 0>;
+			input_booster,cpu_freqs = <1000000 0>;
 			input_booster,hmp_boost = <1 0>;
 			input_booster,kfc_freqs = <800000 0>;
 			input_booster,mif_freqs = <0 0>;
@@ -2240,15 +2241,34 @@
 
 			/* Frequency table */
 			/* for level	:	1_Head 2_Tail*/
-			input_booster,cpu_freqs = <1200000 0>;
+			input_booster,cpu_freqs = <1100000 0>;
 			input_booster,hmp_boost = <1 0>;
 			input_booster,kfc_freqs = <800000 1296000>;
 			input_booster,mif_freqs = <0 0>;
 			input_booster,int_freqs = <0 0>;
 
 			/* Time table */
-			input_booster,head_times = <130 0>;
-			input_booster,tail_times = <0 500>;
+			input_booster,head_times = <130 130>;
+			input_booster,tail_times = <500 500>;
+			input_booster,phase_times = <0 0>;
+		};
+		booster_key@9 {
+			input_booster,label = "GAMEPAD";
+			input_booster,type = <8>;	/* BOOSTER_DEVICE_GAMEPAD */
+
+			input_booster,levels = <1 2>;
+
+			/* Frequency table */
+			/* for level	:	1_Head 2_Tail*/
+			input_booster,cpu_freqs = <1300000 0>;
+			input_booster,hmp_boost = <1 0>;
+			input_booster,kfc_freqs = <1200000 1296000>;
+			input_booster,mif_freqs = <0 0>;
+			input_booster,int_freqs = <0 0>;
+
+			/* Time table */
+			input_booster,head_times = <130 130>;
+			input_booster,tail_times = <500 500>;
 			input_booster,phase_times = <0 0>;
 		}; // Input Booster -
 		/* If you need to add new key type, add it this position */
