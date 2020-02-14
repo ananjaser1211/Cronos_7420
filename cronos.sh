@@ -212,6 +212,8 @@ BUILD_ZIMAGE()
 	echo "----------------------------------------------"
 	echo " "
 	echo "Building zImage for $CR_VARIANT"
+  # Make sure image name is set
+  BUILD_IMAGE_NAME
 	export LOCALVERSION=-$CR_IMAGE_NAME
     if [ $CR_S6MOD = "1" ]; then
     echo " Copy Modded S6 Battery DTSI"
