@@ -9,7 +9,7 @@
  * published by the Free Software Foundation.
 */
 
-#include "modem-ss333-ds-pdata.dtsi"
+#include "modem-ss333-pdata-UNI.dtsi"
 
 /* modem_interface_driver: UMTS modem, 2G/3G/4G, Samsung Electronics Shannon333 (SS333) */
 
