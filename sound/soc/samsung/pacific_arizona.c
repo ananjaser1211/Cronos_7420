@@ -296,7 +296,7 @@ void pacific_arizona_micd_cb(bool mic)
 	priv->ear_mic = mic;
 	dev_info(the_codec->dev, "%s: ear_mic = %d\n", __func__, priv->ear_mic);
 }
-
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 void pacific_update_impedance_table(struct device_node *np)
 {
 	int len = ARRAY_SIZE(hp_gain_table);
@@ -306,7 +306,7 @@ void pacific_update_impedance_table(struct device_node *np)
 	WARN_ON(!the_codec);
 	if (!the_codec)
 		return;
-#ifndef CONFIG_DONT_UNIFY_ME_PLS
+
 	if (variant_aif_required == HAS_AIF) {
 		if (!of_property_read_u32_array(np, "imp_table", data, (len * 3))) {
 			dev_info(the_codec->dev, "%s: data from DT\n", __func__);
@@ -316,17 +316,7 @@ void pacific_update_impedance_table(struct device_node *np)
 				hp_gain_table[i].max = data[(i * 3) + 1];
 				hp_gain_table[i].gain = data[(i * 3) + 2];
 			}
-#else
-
-	if (!of_property_read_u32_array(np, "imp_table", data, (len * 3))) {
-		dev_info(the_codec->dev, "%s: data from DT\n", __func__);
-
-		for (i = 0; i < len; i++) {
-			hp_gain_table[i].min = data[i * 3];
-			hp_gain_table[i].max = data[(i * 3) + 1];
-			hp_gain_table[i].gain = data[(i * 3) + 2];
 		}
-#endif
 	}
 
 	if (!of_property_read_u32(np, "imp_shift", &shift)) {
@@ -340,7 +330,41 @@ void pacific_update_impedance_table(struct device_node *np)
 		}
 	}
 }
+#else
+void pacific_update_impedance_table(struct device_node *np)
+{
+	int len = ARRAY_SIZE(hp_gain_table);
+	u32 data[len * 3];
+	int i, shift;
 
+	WARN_ON(!the_codec);
+	if (!the_codec)
+		return;
+
+	if (variant_aif_required == HAS_AIF) {
+		if (!of_property_read_u32_array(np, "imp_table", data, (len * 3))) {
+			dev_info(the_codec->dev, "%s: data from DT\n", __func__);
+	
+			for (i = 0; i < len; i++) {
+				hp_gain_table[i].min = data[i * 3];
+				hp_gain_table[i].max = data[(i * 3) + 1];
+				hp_gain_table[i].gain = data[(i * 3) + 2];
+			}
+		}
+	}
+
+	if (!of_property_read_u32(np, "imp_shift", &shift)) {
+		dev_info(the_codec->dev, "%s: shift = %d\n", __func__, shift);
+
+		for (i = 0; i < len; i++) {
+			if (hp_gain_table[i].min != 0)
+				hp_gain_table[i].min += shift;
+			if ((hp_gain_table[i].max + shift) < INT_MAX)
+				hp_gain_table[i].max += shift;
+		}
+	}
+}
+#endif
 static int arizona_put_impedance_volsw(struct snd_kcontrol *kcontrol,
 			       struct snd_ctl_elem_value *ucontrol)
 {
@@ -1553,7 +1577,7 @@ static struct snd_soc_dai_link pacific_wm1840_dai[] = {
 	},
 #endif
 };
-
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 static int pacific_of_get_pdata(struct snd_soc_card *card)
 {
 	struct device_node *pdata_np;
@@ -1581,7 +1605,7 @@ static int pacific_of_get_pdata(struct snd_soc_card *card)
 
 	priv->seamless_voicewakeup =
 		of_property_read_bool(pdata_np, "seamless_voicewakeup");
-#ifndef CONFIG_DONT_UNIFY_ME_PLS
+
 	if (variant_aif_required == HAS_AIF) {
 		of_property_read_u32_array(pdata_np, "aif_format",
 			priv->aif_format, ARRAY_SIZE(priv->aif_format));
@@ -1598,7 +1622,37 @@ static int pacific_of_get_pdata(struct snd_soc_card *card)
 					| SND_SOC_DAIFMT_NB_NF
 					| SND_SOC_DAIFMT_CBM_CFM;
 	}
+	return 0;
+}
 #else
+static int pacific_of_get_pdata(struct snd_soc_card *card)
+{
+	struct device_node *pdata_np;
+	struct arizona_machine_priv *priv = card->drvdata;
+	int ret;
+
+	pdata_np = of_find_node_by_path("/audio_pdata");
+	if (!pdata_np) {
+		dev_err(card->dev,
+			"Property 'samsung,audio-pdata' missing or invalid\n");
+		return -EINVAL;
+	}
+
+	priv->mic_bias_gpio = of_get_named_gpio(pdata_np, "mic_bias_gpio", 0);
+
+	if (gpio_is_valid(priv->mic_bias_gpio)) {
+		ret = gpio_request(priv->mic_bias_gpio, "MICBIAS_EN_AP");
+		if (ret)
+			dev_err(card->dev, "Failed to request gpio: %d\n", ret);
+
+		gpio_direction_output(priv->mic_bias_gpio, 0);
+	}
+
+	pacific_update_impedance_table(pdata_np);
+
+	priv->seamless_voicewakeup =
+		of_property_read_bool(pdata_np, "seamless_voicewakeup");
+
 	ret = of_property_read_u32_array(pdata_np, "aif_format",
 			priv->aif_format, ARRAY_SIZE(priv->aif_format));
 	if (ret == -EINVAL) {
@@ -1615,9 +1669,10 @@ static int pacific_of_get_pdata(struct snd_soc_card *card)
 
 	of_property_read_u32_array(pdata_np, "aif_format_tdm",
 			priv->aif_format_tdm, ARRAY_SIZE(priv->aif_format_tdm));
-#endif
+
 	return 0;
 }
+#endif
 
 static void get_voicetrigger_dump(struct snd_soc_card *card)
 {

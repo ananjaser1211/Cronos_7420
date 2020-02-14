@@ -2920,8 +2920,8 @@ static int arizona_extcon_of_get_pdata(struct arizona *arizona)
 		arizona_of_read_s32(arizona, "wlf,hpdet-short-circuit-imp_F", false,
 #else
         arizona_of_read_s32(arizona, "wlf,hpdet-short-circuit-imp", false,
-			    &pdata->hpdet_short_circuit_imp);
 #endif
+			    &pdata->hpdet_short_circuit_imp);
 	arizona_of_read_s32(arizona, "wlf,hpdet-channel", false,
 			    &pdata->hpdet_channel);
 
