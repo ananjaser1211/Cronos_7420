@@ -113,16 +113,6 @@ if [ "$aud" = "2" ]; then
      CR_MODE="2"
 fi
 
-# International / US variant support
-read -p "Variant? (1 (intl) | 2 (us) > " aud
-if [ "$aud" = "us" -o "$aud" = "2" ]; then
-     echo "Build US variant"
-     CR_AUDIO="2"
-else
-     echo "Build international variant"
-     CR_AUDIO="1"
-fi
-
 BUILD_CLEAN()
 {
 if [ $CR_CLEAN = 1 ]; then
@@ -176,7 +166,7 @@ BUILD_GENERATE_CONFIG()
     echo " Copy $CR_CONFIG_SPLIT "
     cat $CR_DIR/arch/$CR_ARCH/configs/$CR_CONFIG_SPLIT >> $CR_DIR/arch/$CR_ARCH/configs/tmp_defconfig
   fi
-  if [ $CR_AUDIO != "NULL" ]; then
+  if [ $CR_CONFIG_AUDIO = "$CR_CONFIG_AUDIENCE" ]; then
     echo " Copy $CR_CONFIG_AUDIO "
     cat $CR_DIR/arch/$CR_ARCH/configs/$CR_CONFIG_AUDIO >> $CR_DIR/arch/$CR_ARCH/configs/tmp_defconfig
   fi
@@ -305,7 +295,7 @@ echo "----------------------------------------------"
 echo "$CR_NAME $CR_VERSION Build Script"
 echo "----------------------------------------------"
 PS3='Please select your option (1-5): '
-menuvar=("SM-N920X" "SM-G92X" "SM-G928X" "ALL" "Exit")
+menuvar=("SM-N920X" "SM-G928X" "SM-G92X" "ALL" "Exit")
 select menuvar in "${menuvar[@]}"
 do
     case $menuvar in
@@ -314,17 +304,10 @@ do
             echo "Starting $CR_VARIANT_N920C kernel build..."
             CR_CONFIG=$CR_CONFIG_N920C
             CR_VIDEO="noble"
-            if [ $CR_AUDIO = "2" ]; then
-              echo " Building US variant "
-              CR_CONFIG_AUDIO=$CR_CONFIG_AUDIENCE
-              CR_VARIANT=$CR_VARIANT_N920T
-              CR_DTSFILES=$CR_DTSFILES_N920T
-            else
-              echo " Building intl variant "
-              CR_CONFIG_AUDIO=$CR_CONFIG_INTL
-              CR_VARIANT=$CR_VARIANT_N920C
-              CR_DTSFILES=$CR_DTSFILES_N920C
-            fi
+            echo " Adding Audience support "
+            CR_CONFIG_AUDIO=$CR_CONFIG_AUDIENCE
+            CR_VARIANT=$CR_VARIANT_N920C
+            CR_DTSFILES=$CR_DTSFILES_N920T
             if [ $CR_MODE = "1" ]; then
               echo " Building Oneui variant "
               CR_VARIANT=$CR_VARIANT-OneUI
@@ -385,17 +368,10 @@ do
             echo "Starting $CR_VARIANT_G928X kernel build..."
             CR_CONFIG=$CR_CONFIG_G928X
             CR_VIDEO="noble"
-            if [ $CR_AUDIO = "2" ]; then
-              echo " Building US variant "
-              CR_CONFIG_AUDIO=$CR_CONFIG_AUDIENCE
-              CR_VARIANT=$CR_VARIANT_G928T
-              CR_DTSFILES=$CR_DTSFILES_G928T
-            else
-              echo " Building intl variant "
-              CR_CONFIG_AUDIO=$CR_CONFIG_INTL
-              CR_VARIANT=$CR_VARIANT_G928X
-              CR_DTSFILES=$CR_DTSFILES_G928X
-            fi
+            echo " Adding Audience support "
+            CR_CONFIG_AUDIO=$CR_CONFIG_AUDIENCE
+            CR_VARIANT=$CR_VARIANT_G928X
+            CR_DTSFILES=$CR_DTSFILES_G928T
             if [ $CR_MODE = "1" ]; then
               echo " Building Oneui variant "
               CR_VARIANT=$CR_VARIANT-OneUI
@@ -419,17 +395,10 @@ do
             echo "Starting $CR_VARIANT_N920C kernel build..."
             CR_CONFIG=$CR_CONFIG_N920C
             CR_VIDEO="noble"
-            if [ $CR_AUDIO = "2" ]; then
-              echo " Building US variant "
-              CR_CONFIG_AUDIO=$CR_CONFIG_AUDIENCE
-              CR_VARIANT=$CR_VARIANT_N920T
-              CR_DTSFILES=$CR_DTSFILES_N920T
-            else
-              echo " Building intl variant "
-              CR_CONFIG_AUDIO=$CR_CONFIG_INTL
-              CR_VARIANT=$CR_VARIANT_N920C
-              CR_DTSFILES=$CR_DTSFILES_N920C
-            fi
+            echo " Adding Audience support "
+            CR_CONFIG_AUDIO=$CR_CONFIG_AUDIENCE
+            CR_VARIANT=$CR_VARIANT_N920C
+            CR_DTSFILES=$CR_DTSFILES_N920T
             if [ $CR_MODE = "1" ]; then
               echo " Building Oneui variant "
               CR_VARIANT=$CR_VARIANT-OneUI
@@ -449,17 +418,10 @@ do
             echo "Starting $CR_VARIANT_G928X kernel build..."
             CR_CONFIG=$CR_CONFIG_G928X
             CR_VIDEO="noble"
-            if [ $CR_AUDIO = "2" ]; then
-              echo " Building US variant "
-              CR_CONFIG_AUDIO=$CR_CONFIG_AUDIENCE
-              CR_VARIANT=$CR_VARIANT_G928T
-              CR_DTSFILES=$CR_DTSFILES_G928T
-            else
-              echo " Building intl variant "
-              CR_CONFIG_AUDIO=$CR_CONFIG_INTL
-              CR_VARIANT=$CR_VARIANT_G928X
-              CR_DTSFILES=$CR_DTSFILES_G928X
-            fi
+            echo " Adding Audience support "
+            CR_CONFIG_AUDIO=$CR_CONFIG_AUDIENCE
+            CR_VARIANT=$CR_VARIANT_G928X
+            CR_DTSFILES=$CR_DTSFILES_G928T
             if [ $CR_MODE = "1" ]; then
               echo " Building Oneui variant "
               CR_VARIANT=$CR_VARIANT-OneUI
