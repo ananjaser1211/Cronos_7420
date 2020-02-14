@@ -40,8 +40,9 @@
 #include "es705-uart.h"
 #include "es705-uart-common.h"
 #include "es705-cdev.h"
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 #include <linux/variant_detection.h>
-
+#endif
 #ifdef ES705_FW_LOAD_BUF_SZ
 #undef ES705_FW_LOAD_BUF_SZ
 #endif
@@ -427,10 +428,10 @@ static int es705_uart_probe_thread(void *ptr)
 {
 	int rc = 0;
 	struct device *dev = (struct device *)ptr;
-
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 	if (variant_aif_required == NO_AIF)
 		return rc;
-
+#endif
 	rc = es705_uart_open(&es705_priv);
 	if (rc) {
 		dev_err(dev, "%s(): es705_uart_open() failed %d\n", __func__,
@@ -497,10 +498,10 @@ static int es705_uart_probe(struct platform_device *dev)
 static int es705_uart_remove(struct platform_device *dev)
 {
 	int rc = 0;
-
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 	if (variant_aif_required == NO_AIF)
 		return rc;
-
+#endif
 	if (es705_priv.uart_dev.file)
 		es705_uart_close(&es705_priv);
 

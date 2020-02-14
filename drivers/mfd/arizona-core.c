@@ -32,8 +32,9 @@
 
 #include <linux/mfd/arizona/core.h>
 #include <linux/mfd/arizona/registers.h>
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 #include <linux/variant_detection.h>
-
+#endif
 #include "arizona.h"
 
 static const char *wm5102_core_supplies[] = {
@@ -1362,12 +1363,14 @@ static int arizona_of_get_core_pdata(struct arizona *arizona)
 	arizona_of_get_max_channels(arizona, "wlf,max-channels-clocked");
 
 	arizona_of_get_dmicref(arizona, "wlf,dmic-ref");
-
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 	if (variant_aif_required == HAS_AIF)
 		arizona_of_get_inmode(arizona, "wlf,inmode_T");
 	else
 		arizona_of_get_inmode(arizona, "wlf,inmode_F");
-
+#else
+        arizona_of_get_inmode(arizona, "wlf,inmode");
+#endif
 	arizona_of_read_u32_array(arizona, "wlf,out-mono", false,
 				  out_mono, ARRAY_SIZE(out_mono));
 	for (i = 0; i < ARRAY_SIZE(out_mono); ++i)

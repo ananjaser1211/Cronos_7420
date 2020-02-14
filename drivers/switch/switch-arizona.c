@@ -38,8 +38,9 @@
 #include <linux/mfd/arizona/core.h>
 #include <linux/mfd/arizona/pdata.h>
 #include <linux/mfd/arizona/registers.h>
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 #include <linux/variant_detection.h>
-
+#endif
 #define ARIZONA_MAX_MICD_RANGE 8
 
 #define ARIZONA_ACCDET_MODE_MIC     0
@@ -2911,14 +2912,16 @@ static int arizona_extcon_of_get_pdata(struct arizona *arizona)
 
 	arizona_of_read_s32(arizona, "wlf,hpdet-moisture-debounce", false,
 			    &pdata->hpdet_moisture_debounce);
-
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 	if (variant_aif_required == HAS_AIF)
 		arizona_of_read_s32(arizona, "wlf,hpdet-short-circuit-imp_T", false,
  			    &pdata->hpdet_short_circuit_imp);
 	else
 		arizona_of_read_s32(arizona, "wlf,hpdet-short-circuit-imp_F", false,
+#else
+        arizona_of_read_s32(arizona, "wlf,hpdet-short-circuit-imp", false,
 			    &pdata->hpdet_short_circuit_imp);
-
+#endif
 	arizona_of_read_s32(arizona, "wlf,hpdet-channel", false,
 			    &pdata->hpdet_channel);
 

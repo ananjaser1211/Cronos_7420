@@ -21,8 +21,9 @@
 #include <linux/of.h>
 #include <linux/i2c-gpio.h>
 #include <asm/gpio.h>
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 #include <linux/variant_detection.h>
-
+#endif
 /* GPIO STATUS */
 #define SS_VALUE	0	/* Low  = Single Sim */
 #define DS_VALUE	1	/* High = Dual Sim */
@@ -73,10 +74,10 @@ static int check_simslot_count(struct seq_file *m, void *v)
 		}
 		gpio_free(gpio_number);
 	}
-
+#ifndef CONFIG_DONT_UNIFY_ME_PLS
 	if (variant_edge == IS_EDGE)
 		support_number_of_simslot = SINGLE_SIM;
-
+#endif
 	if(support_number_of_simslot < 0)
 	{
 		pr_err("******* Make a forced kernel panic because can't check simslot count******\n");
