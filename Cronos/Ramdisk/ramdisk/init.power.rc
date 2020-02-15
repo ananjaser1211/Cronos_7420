@@ -244,30 +244,30 @@ on boot
     write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor interactive
     write /sys/devices/system/cpu/cpu0/cpufreq/interactive/above_hispeed_delay 19000
     write /sys/devices/system/cpu/cpu0/cpufreq/interactive/boostpulse_duration 40000
-    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/go_hispeed_load 85
-    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/io_is_busy 0
-    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/target_loads 75
+    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/go_hispeed_load 99
+    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/io_is_busy 1
+    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/target_loads "65 900000:75 1104000:80"
     write /sys/devices/system/cpu/cpu0/cpufreq/interactive/min_sample_time 40000
     write /sys/devices/system/cpu/cpu0/cpufreq/interactive/timer_rate 20000
 
     # BIG cluster tuning
     write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor interactive
-    write /sys/devices/system/cpu/cpu4/cpufreq/interactive/above_hispeed_delay 59000 1300000:39000 1700000:19000
+    write /sys/devices/system/cpu/cpu4/cpufreq/interactive/above_hispeed_delay 19000
     write /sys/devices/system/cpu/cpu4/cpufreq/interactive/boostpulse_duration 40000
-    write /sys/devices/system/cpu/cpu4/cpufreq/interactive/go_hispeed_load 89
-    write /sys/devices/system/cpu/cpu4/cpufreq/interactive/io_is_busy 0
-    write /sys/devices/system/cpu/cpu4/cpufreq/interactive/target_loads 65 1500000:75
+    write /sys/devices/system/cpu/cpu4/cpufreq/interactive/go_hispeed_load 99
+    write /sys/devices/system/cpu/cpu4/cpufreq/interactive/io_is_busy 1
+    write /sys/devices/system/cpu/cpu4/cpufreq/interactive/target_loads "70 1200000:80 1600000:85"
     write /sys/devices/system/cpu/cpu4/cpufreq/interactive/min_sample_time 40000
     write /sys/devices/system/cpu/cpu4/cpufreq/interactive/timer_rate 20000
 
-    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1500000
-    write /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq 1500000
-    write /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq 1500000
-    write /sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq 1500000
-    write /sys/devices/system/cpu/cpu4/cpufreq/scaling_max_freq 2000000
-    write /sys/devices/system/cpu/cpu5/cpufreq/scaling_max_freq 2000000
-    write /sys/devices/system/cpu/cpu6/cpufreq/scaling_max_freq 2000000
-    write /sys/devices/system/cpu/cpu7/cpufreq/scaling_max_freq 2000000
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1400000
+    write /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq 1400000
+    write /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq 1400000
+    write /sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq 1400000
+    write /sys/devices/system/cpu/cpu4/cpufreq/scaling_max_freq 1800000
+    write /sys/devices/system/cpu/cpu5/cpufreq/scaling_max_freq 1800000
+    write /sys/devices/system/cpu/cpu6/cpufreq/scaling_max_freq 1800000
+    write /sys/devices/system/cpu/cpu7/cpufreq/scaling_max_freq 1800000
 
     write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 400000
     write /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq 400000
