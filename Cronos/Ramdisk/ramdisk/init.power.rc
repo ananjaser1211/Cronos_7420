@@ -18,13 +18,14 @@
 # Disk optimizations
 #
 on late-fs
-    write /sys/block/sda/queue/scheduler "row"
+    write /sys/block/sda/queue/scheduler "cfq"
     write /sys/block/sda/queue/add_random 0
-    write /sys/block/sda/queue/iostats 0
-    write /sys/block/sda/queue/read_ahead_kb 256
+    write /sys/block/sda/queue/iostats 1
+    write /sys/block/sda/queue/nomerges 0
+    write /sys/block/sda/queue/nr_requests 128
+    write /sys/block/sda/queue/read_ahead_kb 128
     write /sys/block/sda/queue/rotational 0
-    write /sys/block/sda/queue/rq_affinity 2
-    write /sys/block/sda/queue/iosched/slice_idle 0
+    write /sys/block/sda/queue/rq_affinity 1
 
 #
 # init.power.rc
