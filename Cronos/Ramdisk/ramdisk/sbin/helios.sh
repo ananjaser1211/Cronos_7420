@@ -50,17 +50,15 @@ if [ ! -e /data/helios ]; then
 	chmod -R 755 /data/helios
 fi
 
-if [ ! -e /data/heliosLogcat ]; then
-  mkdir -p /data/heliosLogcat
-  chown -R root.root /data/heliosLogcat
-  chmod -R 755 /data/heliosLogcat
+if [ -e /data/heliosLogcat ]; then
+	rm -rf /data/heliosLogcat
 fi
 
-   log_print "Backup previous logcat"
+   # log_print "Backup previous logcat"
 
-if [ -e /data/helios/Refined_logger.log ]; then
-  cp "/data/helios/Refined_logger.log" "/data/heliosLogcat/Refined_Logger_$(date +"%d-%m-%Y %H:%M:%S").log"
-fi
+# if [ -e /data/helios/Refined_logger.log ]; then
+#   cp "/data/helios/Refined_logger.log" "/data/heliosLogcat/Refined_Logger_$(date +"%d-%m-%Y %H:%M:%S").log"
+# fi
 
    log_print "Mounting"
 # Initial
@@ -177,11 +175,11 @@ mount -o remount,ro -t auto /system
 mount -o remount,rw /data
 mount -o remount,rw /cache
 
-   log_print "Start RefinedLogger"
+  # log_print "Start RefinedLogger"
 
    log_print "**helios early boot script finished at $( date +"%d-%m-%Y %H:%M:%S" )**"
    log_print "------------------------------------------------------"
 
    # RefinedLogger
-/system/bin/logcat *:E > /data/helios/Refined_logger.log
+ # /system/bin/logcat *:E > /data/helios/Refined_logger.log
 
