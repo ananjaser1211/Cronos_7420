@@ -164,8 +164,8 @@ if [ ! -e $nuked ];then
    wm density 560
    wm size 1440x2560
 # set the flag for system being edited already
-   echo "nuked" > /system/nuked  
-fi   
+   echo "nuked" > /system/nuked
+fi
 
    log_print "Remount"
 
