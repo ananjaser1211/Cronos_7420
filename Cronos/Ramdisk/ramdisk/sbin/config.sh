@@ -32,14 +32,14 @@ log_print "**helios Configurator script started at $( date +"%d-%m-%Y %H:%M:%S" 
 log_print "**Execute $GPU adjustments**"
 log_print "**Apply AlwaysON**"
 echo 'always_on' > $GPU/power_policy
-log_print "**Apply Custom voltage**"
-echo '266 643750' > $GPU/volt_table
-echo '350 650000' > $GPU/volt_table
-echo '420 656250' > $GPU/volt_table
-echo '544 700000' > $GPU/volt_table
-echo '600 731250' > $GPU/volt_table
-echo '700 775000' > $GPU/volt_table
-echo '772 812500' > $GPU/volt_table
+#log_print "**Apply Custom voltage**"
+#echo '266 643750' > $GPU/volt_table
+#echo '350 650000' > $GPU/volt_table
+#echo '420 656250' > $GPU/volt_table
+#echo '544 700000' > $GPU/volt_table
+#echo '600 731250' > $GPU/volt_table
+#echo '700 775000' > $GPU/volt_table
+#echo '772 812500' > $GPU/volt_table
 log_print "**Apply 600 max freq**"
 echo '600' > sys/kernel/gpu/gpu_max_clock
 log_print "**Execute $CPU adjustments**"
