@@ -30,8 +30,8 @@ log_print "**helios Configurator script started at $( date +"%d-%m-%Y %H:%M:%S" 
 
 # Execute mods
 log_print "**Execute $GPU adjustments**"
-log_print "**Apply AlwaysON**"
-echo 'always_on' > $GPU/power_policy
+#log_print "**Apply AlwaysON**"
+#echo 'always_on' > $GPU/power_policy
 #log_print "**Apply Custom voltage**"
 #echo '266 643750' > $GPU/volt_table
 #echo '350 650000' > $GPU/volt_table
