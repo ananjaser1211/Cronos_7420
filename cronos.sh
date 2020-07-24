@@ -19,7 +19,7 @@
 # Main Dir
 CR_DIR=$(pwd)
 # Define toolchan path
-CR_TC=~/Android/Toolchains/linaro-7.5.0-aarch64-linux/bin/aarch64-linux-gnu-
+CR_TC=~/Android/Toolchains/linaro-4.9.4-aarch64-linux/bin/aarch64-linux-gnu-
 # Define proper arch and dir for dts files
 CR_DTS=arch/arm64/boot/dts
 CR_DTS_S6_2600=arch/arm64/boot/G92X_battery_2600.dtsi
