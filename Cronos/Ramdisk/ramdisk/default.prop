@@ -46,18 +46,19 @@ ro.zygote=zygote64_32
 ro.vendor.epdg.support=true
 ro.logd.size.stats=64K
 log.tag.stats_log=I
+# Cronos Tweaks
+wlan.wfd.hdcp=disable
+ro.frp.pst=
+ro.config.tima=0
+ro.config.rkp=false
+ro.config.kap=false
+ro.security.vaultkeeper.feature=0
+ro.securestorage.support=false
+ro.securestorage.knox=false
+ro.config.dmverity=false
 #
 # BOOTIMAGE_BUILD_PROPERTIES
 #
-ro.bootimage.build.date=Tue Nov 26 13:29:36 KST 2019
-ro.bootimage.build.date.utc=1574742576
-ro.bootimage.build.fingerprint=samsung/gracerltexx/gracerlte:9/PPR1.180610.011/N935FXXU6CSK1:user/test-keys
-# Cronos Tweaks
-wlan.wfd.hdcp=disable
-ro.config.tima=0
-ro.frp.pst=
-ro.config.dmverity=false
-ro.config.rkp=false
-security.knox_kap_mode=false
-ro.config.kap_default_on=false
-ro.config.kap=false
+ro.bootimage.build.date=Wed May 6 15:32:33 KST 2020
+ro.bootimage.build.date.utc=1588746753
+ro.bootimage.build.fingerprint=samsung/gracerltexx/gracerlte:9/PPR1.180610.011/N935FXXS7CTE1:user/test-keys
